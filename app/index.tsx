@@ -50,7 +50,7 @@ const landingSections: LandingSection[] = [
   },
   {
     key: "events",
-    title: "Events",
+    title: "EVENTS",
     subtitle: "Schedules, registration, and on-campus happenings.",
     variant: "landing-white",
     image:
@@ -181,6 +181,15 @@ function SectionCard({
     variant === "landing-red" ? colors.danger : colors.textPrimary;
 
   const isFeature = sectionKey === "global-arena" || sectionKey === "community";
+  const isEvents = sectionKey === "events";
+
+  if (isEvents) {
+    return (
+      <View style={[stylesSection.eventsBlock, { backgroundColor }]}>
+        <Text style={stylesSection.eventsTitle}>EVENTS</Text>
+      </View>
+    );
+  }
 
   if (isFeature) {
     return (
@@ -296,6 +305,18 @@ const stylesSection = StyleSheet.create({
     color: colors.textPrimary,
     textTransform: "uppercase",
     letterSpacing: 0.4,
+  },
+  eventsBlock: {
+    width: "100%",
+    paddingVertical: 70,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  eventsTitle: {
+    fontSize: 44,
+    fontWeight: "700",
+    letterSpacing: 0.6,
   },
   title: {
     fontSize: 19,
