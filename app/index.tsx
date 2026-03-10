@@ -14,7 +14,11 @@ const { colors } = AppTheme;
 const HERO_HEIGHT = 220;
 const HEADER_HEIGHT = 98;
 
-type LandingVariant = "landing-white" | "landing-gray" | "landing-red";
+type LandingVariant =
+  | "landing-white"
+  | "landing-gray"
+  | "landing-red"
+  | "landing-blue";
 
 type LandingSection = {
   key: string;
@@ -60,7 +64,7 @@ const landingSections: LandingSection[] = [
     key: "perspective",
     title: "Perspective",
     subtitle: "Voices, opinions, and stories from the GWC family.",
-    variant: "landing-red",
+    variant: "landing-blue",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
   },
@@ -94,10 +98,7 @@ export default function HomeScreen() {
       style={styles.container}
     >
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: 0 },
-        ]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 0 }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={(event) => handleScroll(event.nativeEvent.contentOffset.y)}
@@ -170,18 +171,30 @@ function SectionCard({
   key: _deprecatedKey,
   sectionKey,
 }: SectionCardProps & { sectionKey: string; key?: string }) {
-  const backgroundColor =
-    variant === "landing-gray"
-      ? colors.mutedSurface
-      : variant === "landing-red"
-        ? colors.dangerSoft
-        : colors.surface;
-
   const textColor =
-    variant === "landing-red" ? colors.danger : colors.textPrimary;
+    variant === "landing-red"
+      ? colors.danger
+      : variant === "landing-blue"
+        ? colors.surface
+        : colors.textPrimary;
+
+  const subtitleColor =
+    variant === "landing-blue" ? colors.surface : colors.textSecondary;
 
   const isFeature = sectionKey === "global-arena" || sectionKey === "community";
   const isEvents = sectionKey === "events";
+  const isPerspective = sectionKey === "perspective";
+  const isCareers = sectionKey === "careers";
+
+  const backgroundColor = isCareers
+    ? colors.pageBackground
+    : variant === "landing-gray"
+      ? colors.mutedSurface
+      : variant === "landing-red"
+        ? colors.dangerSoft
+        : variant === "landing-blue"
+          ? colors.primary
+          : colors.surface;
 
   if (isEvents) {
     return (
@@ -233,6 +246,64 @@ function SectionCard({
     );
   }
 
+  if (isPerspective) {
+    return (
+      <View style={[stylesSection.card, { backgroundColor }]}>
+        <Text style={stylesPerspective.h1}>PERSPECTIVES + OPINIONS</Text>
+        <Image
+          source={{ uri: image }}
+          style={stylesPerspective.bannerFull}
+          contentFit="cover"
+        />
+        <View style={stylesPerspective.body}>
+          <Text style={stylesPerspective.h2}>PLASTIC FREE ADVOCACY</Text>
+          <Text style={stylesPerspective.paragraph}>
+            As the Field of Study Head for Professional Education, my advocacy
+            in life is all about the “ZERO WASTE PLASTIC MANAGEMENT” in general.
+            And as the former Pioneering Adviser of the Science Educators Guild
+            (SEG), under the Institute of Teacher Education, since then,
+            together with the student organization, we are dreaming and planning
+            to meet the zero-waste plastic management under the “PLASTIC FREE
+            ADVOCACY” to be specific in the College.
+          </Text>
+          <Text style={stylesPerspective.readMore}>Read More →</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (isCareers) {
+    const facultyPositions = [
+      { id: "Instructor I", count: 2, grade: "SG 12", salary: "₱ 29,165.00" },
+      { id: "Instructor II", count: 1, grade: "SG 13", salary: "₱ 31,320.00" },
+      { id: "Instructor III", count: 1, grade: "SG 14", salary: "₱ 33,843.00" },
+    ];
+
+    return (
+      <View style={[stylesSection.card, { backgroundColor }]}>
+        <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
+        <Text style={stylesCareers.h2}>CURRENTLY NO VACANT POSITION AVAILABLE</Text>
+        <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
+        <View style={stylesCareers.list}>
+          {facultyPositions.map(({ id, count, grade, salary }) => (
+            <View key={id} style={stylesCareers.card}>
+              <View style={stylesCareers.bar} />
+              <View style={stylesCareers.cardBody}>
+                <View style={stylesCareers.countBubble}>
+                  <Text style={stylesCareers.countText}>{count}</Text>
+                </View>
+                <Text style={stylesCareers.title}>{id}</Text>
+                <Text style={stylesCareers.meta}>
+                  {grade} – {salary}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[stylesSection.card, { backgroundColor }]}>
       <Image
@@ -247,13 +318,23 @@ function SectionCard({
               stylesSection.badge,
               variant === "landing-red" && stylesSection.badgeRed,
               variant === "landing-gray" && stylesSection.badgeGray,
+              variant === "landing-blue" && stylesSection.badgeBlue,
             ]}
           >
-            <Text style={stylesSection.badgeText}>{variant}</Text>
+            <Text
+              style={[
+                stylesSection.badgeText,
+                variant === "landing-blue" && stylesSection.badgeTextBlue,
+              ]}
+            >
+              {variant}
+            </Text>
           </View>
         </View>
         <Text style={[stylesSection.title, { color: textColor }]}>{title}</Text>
-        <Text style={stylesSection.subtitle}>{subtitle}</Text>
+        <Text style={[stylesSection.subtitle, { color: subtitleColor }]}>
+          {subtitle}
+        </Text>
       </View>
     </View>
   );
@@ -291,7 +372,7 @@ const stylesSection = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.primary,
   },
   badgeRed: {
     backgroundColor: colors.dangerSoft,
@@ -299,12 +380,18 @@ const stylesSection = StyleSheet.create({
   badgeGray: {
     backgroundColor: colors.mutedSurface,
   },
+  badgeBlue: {
+    backgroundColor: colors.surface,
+  },
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: colors.textPrimary,
+    color: colors.surface,
     textTransform: "uppercase",
     letterSpacing: 0.4,
+  },
+  badgeTextBlue: {
+    color: colors.primary,
   },
   eventsBlock: {
     width: "100%",
@@ -415,5 +502,146 @@ const stylesFeature = StyleSheet.create({
     fontWeight: "700",
     fontFamily: FontFamilies.accent,
     color: colors.textPrimary,
+  },
+});
+
+const stylesCareers = StyleSheet.create({
+  h1: {
+    fontSize: 40,
+    fontWeight: "800",
+    fontFamily: FontFamilies.heading,
+    textAlign: "center",
+    color: colors.textPrimary,
+    marginBottom: 10,
+    letterSpacing: 0.3,
+  },
+  h2: {
+    fontSize: 28,
+    fontWeight: "700",
+    fontFamily: FontFamilies.accent,
+    textAlign: "center",
+    color: colors.textPrimary,
+    fontStyle: "italic",
+    marginBottom: 30,
+    letterSpacing: 0.2,
+  },
+  h3: {
+    fontSize: 24,
+    fontWeight: "700",
+    fontFamily: FontFamilies.headingBold,
+    textAlign: "center",
+    color: colors.textPrimary,
+    marginBottom: 16,
+  },
+  list: {
+    gap: 12,
+  },
+  card: {
+    flexDirection: "row",
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+  },
+  bar: {
+    width: 6,
+    height: "100%",
+    borderRadius: 3,
+    backgroundColor: "#111111",
+    marginRight: 12,
+  },
+  cardBody: {
+    flex: 1,
+    alignItems: "center",
+    gap: 6,
+  },
+  countBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 2,
+  },
+  countText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "700",
+    fontFamily: FontFamilies.headingBold,
+    color: colors.textPrimary,
+  },
+  meta: {
+    fontSize: 14,
+    fontFamily: FontFamilies.body,
+    color: colors.textPrimary,
+  },
+});
+
+const stylesPerspective = StyleSheet.create({
+  h1: {
+    fontSize: 40,
+    fontWeight: "800",
+    fontFamily: FontFamilies.heading,
+    textAlign: "center",
+    color: colors.surface,
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 20,
+    letterSpacing: 0.2,
+    marginBottom: 48,
+  },
+  bannerFull: {
+    width: "100%",
+    alignSelf: "stretch",
+    height: 190,
+    marginBottom: 18,
+  },
+  body: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    gap: 10,
+  },
+  h2: {
+    fontSize: 32,
+    fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
+    letterSpacing: 0.2,
+    textAlign: "center",
+    color: colors.surface,
+  },
+  paragraph: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontFamily: FontFamilies.body,
+    color: colors.surface,
+    textAlign: "justify",
+    marginBottom: 10,
+  },
+  readMore: {
+    alignSelf: "flex-end",
+    fontSize: 16,
+    fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
+    color: colors.primary,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
 });
