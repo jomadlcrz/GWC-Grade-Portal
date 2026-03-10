@@ -1,6 +1,14 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import {
+  Animated,
+  Easing,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { AppTheme } from "@/constants/theme";
 
@@ -15,13 +23,32 @@ export function Header({
   subtitle = "Grade Portal",
   mode = "sticky",
 }: HeaderProps) {
+  const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
   const isWeb = Platform.OS === "web";
-  const isOverlay = mode === "overlay";
   const displayTitle = isWeb ? `${title} ${subtitle}`.toUpperCase() : title;
   const displaySubtitle = isWeb ? "" : subtitle;
 
+  useEffect(() => {
+    Animated.timing(bgAnim, {
+      toValue: mode === "overlay" ? 0 : 1,
+      duration: 650,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [mode, bgAnim]);
+
   return (
-    <View style={[styles.container, isOverlay && styles.containerOverlay]}>
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          backgroundColor: bgAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: ["rgba(255,255,255,0)", colors.surface],
+          }),
+        },
+      ]}
+    >
       <View style={styles.leftGroup}>
         <View style={styles.logoWrapper}>
           <Image
@@ -32,11 +59,18 @@ export function Header({
         </View>
 
         <View style={styles.textGroup}>
-          <Text style={[styles.title, isOverlay && styles.overlayText]}>
+          <Text
+            style={[styles.title, mode === "overlay" && styles.overlayText]}
+          >
             {displayTitle}
           </Text>
           {!isWeb && (
-            <Text style={[styles.subtitle, isOverlay && styles.overlayText]}>
+            <Text
+              style={[
+                styles.subtitle,
+                mode === "overlay" && styles.overlayText,
+              ]}
+            >
               {displaySubtitle}
             </Text>
           )}
@@ -48,7 +82,7 @@ export function Header({
         <FontAwesome5 name="search" size={26} color={colors.surface} />
         <FontAwesome5 name="bars" size={28} color={colors.surface} />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -63,9 +97,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     gap: spacing.sm,
     backgroundColor: colors.surface,
-  },
-  containerOverlay: {
-    backgroundColor: "transparent",
   },
   leftGroup: {
     flexDirection: "row",
