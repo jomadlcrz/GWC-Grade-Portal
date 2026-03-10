@@ -68,17 +68,19 @@ export function Footer(_: FooterProps) {
           </View>
 
           <View style={styles.socialRow}>
-            <Text
-              onPress={() =>
-                openLink("https://www.facebook.com/gwcalaminosofficial")
-              }
-            >
-              <FontAwesome5
-                name="facebook-f"
-                size={18}
-                color={colors.textOnPrimary}
-              />
-            </Text>
+            <View style={styles.iconBackground}>
+              <Text
+                onPress={() =>
+                  openLink("https://www.facebook.com/gwcalaminosofficial")
+                }
+              >
+                <FontAwesome5
+                  name="facebook-f"
+                  size={18}
+                  color={colors.textOnPrimary}
+                />
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -190,6 +192,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.xl,
     marginTop: spacing.md,
+  },
+  iconBackground: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
   },
   addressGroup: {
     gap: spacing.sm,
