@@ -53,7 +53,9 @@ export function Footer(_: FooterProps) {
           <View style={styles.contactGroup}>
             <Text
               style={styles.linkText}
-              onPress={() => openLink("mailto:goldenwest.colleges@yahoo.com.ph")}
+              onPress={() =>
+                openLink("mailto:goldenwest.colleges@yahoo.com.ph")
+              }
             >
               goldenwest.colleges@yahoo.com.ph
             </Text>
@@ -94,7 +96,7 @@ export function Footer(_: FooterProps) {
                 style={styles.addressText}
                 onPress={() =>
                   openLink(
-                    "https://www.google.com/maps/search/?api=1&query=San+Jose+Drive,+Alaminos,+Pangasinan,+2404"
+                    "https://www.google.com/maps/search/?api=1&query=San+Jose+Drive,+Alaminos,+Pangasinan,+2404",
                   )
                 }
               >
@@ -134,13 +136,12 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: colors.background,
     width: "100%",
-    paddingHorizontal: 0,
     paddingTop: spacing.xl + spacing.sm,
     paddingBottom: 0,
-    gap: spacing.xl,
   },
   content: {
     paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl,
     gap: spacing.xl + spacing.sm,
   },
   logoWrapper: {
@@ -207,12 +208,9 @@ const styles = StyleSheet.create({
     lineHeight: typography.body + 6,
   },
   bottomBar: {
-    marginTop: spacing.xl,
     backgroundColor: "#1C1D21",
-    alignSelf: "stretch",
     width: "100%",
-    marginHorizontal: 0,
-    borderRadius: 0,
+    alignSelf: "stretch",
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     alignItems: "center",
@@ -224,6 +222,7 @@ const styles = StyleSheet.create({
     color: colors.textOnPrimary,
     fontSize: typography.body,
     fontWeight: "400",
+    textAlign: "center",
   },
   copyBrand: {
     fontWeight: "800",
