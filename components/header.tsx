@@ -1,20 +1,27 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme } from "@/constants/theme";
 
 type HeaderProps = {
   title?: string;
   subtitle?: string;
+  mode?: "overlay" | "sticky";
 };
 
 export function Header({
   title = "GWC",
   subtitle = "Grade Portal",
+  mode = "sticky",
 }: HeaderProps) {
+  const isWeb = Platform.OS === "web";
+  const isOverlay = mode === "overlay";
+  const displayTitle = isWeb ? `${title} ${subtitle}`.toUpperCase() : title;
+  const displaySubtitle = isWeb ? "" : subtitle;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isOverlay && styles.containerOverlay]}>
       <View style={styles.leftGroup}>
         <View style={styles.logoWrapper}>
           <Image
@@ -25,8 +32,14 @@ export function Header({
         </View>
 
         <View style={styles.textGroup}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
+          <Text style={[styles.title, isOverlay && styles.overlayText]}>
+            {displayTitle}
+          </Text>
+          {!isWeb && (
+            <Text style={[styles.subtitle, isOverlay && styles.overlayText]}>
+              {displaySubtitle}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -50,6 +63,9 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     gap: spacing.sm,
     backgroundColor: colors.surface,
+  },
+  containerOverlay: {
+    backgroundColor: "transparent",
   },
   leftGroup: {
     flexDirection: "row",
@@ -89,6 +105,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     lineHeight: typography.subtitle + 3,
     textAlign: "center",
+  },
+  overlayText: {
+    color: colors.surface,
   },
   actions: {
     flexDirection: "row",
