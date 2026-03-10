@@ -1,5 +1,4 @@
 import { Image } from "expo-image";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
   Platform,
@@ -30,16 +29,22 @@ export default function HomeScreen() {
   const handleScroll = (offsetY: number) => {
     const shouldUseStickyStyle =
       offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
+
     if (shouldUseStickyStyle !== isScrolled) {
       setIsScrolled(shouldUseStickyStyle);
     }
   };
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
-      <StatusBar style="dark" />
+    <SafeAreaView
+      edges={["top", "bottom", "left", "right"]}
+      style={styles.container}
+    >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={(event) => handleScroll(event.nativeEvent.contentOffset.y)}
@@ -57,7 +62,7 @@ export default function HomeScreen() {
         <Footer />
       </ScrollView>
 
-      <View style={styles.fixedHeader}>
+      <View style={[styles.fixedHeader, { paddingTop: insets.top }]}>
         <Header mode={isScrolled ? "sticky" : "overlay"} />
       </View>
     </SafeAreaView>
@@ -85,6 +90,7 @@ const styles = StyleSheet.create({
   },
   fixedHeader: {
     position: "absolute",
+    top: 0,
     left: 0,
     right: 0,
     zIndex: 20,
