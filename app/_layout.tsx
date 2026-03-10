@@ -20,7 +20,6 @@ import {
 } from "@expo-google-fonts/open-sans";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Text } from "react-native";
 
 export default function RootLayout() {
   const [openSansLoaded] = useOpenSans({
@@ -42,22 +41,6 @@ export default function RootLayout() {
 
   if (!fontsLoaded) {
     return null;
-  }
-
-  const textWithDefaults = Text as typeof Text & { defaultProps?: any };
-  const existingStyle = textWithDefaults.defaultProps?.style;
-  const normalizedStyles = existingStyle
-    ? Array.isArray(existingStyle)
-      ? existingStyle.filter(Boolean)
-      : [existingStyle]
-    : [];
-  const hasOpenSans = normalizedStyles.some(
-    (style) => style && typeof style === "object" && (style as any).fontFamily === "OpenSans_400Regular",
-  );
-
-  if (!hasOpenSans) {
-    textWithDefaults.defaultProps = textWithDefaults.defaultProps || {};
-    textWithDefaults.defaultProps.style = [{ fontFamily: "OpenSans_400Regular" }, ...normalizedStyles];
   }
 
   return (
