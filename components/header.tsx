@@ -18,7 +18,7 @@ export function Header({
       <View style={styles.leftGroup}>
         <View style={styles.logoWrapper}>
           <Image
-            source={require("@/assets/images/gwc_logo_new.png")}
+            source={require("@/assets/images/gwc-logo-new.png")}
             style={styles.logo}
             contentFit="contain"
           />
