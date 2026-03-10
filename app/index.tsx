@@ -34,5 +34,7 @@ const styles = StyleSheet.create({
   },
   stickyHeader: {
     backgroundColor: colors.pageBackground,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
 });
