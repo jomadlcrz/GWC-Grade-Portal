@@ -27,6 +27,7 @@ export const palette = {
   danger900: "#B00020",
   danger100: "#FCE8EC",
   softCard: "#E6ECF3",
+  footer: "#1C1D21",
 };
 
 export const AppTheme = {
@@ -50,6 +51,7 @@ export const AppTheme = {
     placeholder: palette.slate400,
     mutedSurface: palette.slate100,
     softCard: palette.softCard,
+    footer: palette.footer,
   },
   spacing: {
     xs: 4,

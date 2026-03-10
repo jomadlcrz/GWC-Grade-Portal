@@ -130,6 +130,7 @@ const colors = {
   textMuted: palette.slate200,
   accent: themeColors.primarySoft,
   primary: themeColors.surface,
+  footer: themeColors.footer,
 };
 
 const styles = StyleSheet.create({
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
     lineHeight: typography.body + 6,
   },
   bottomBar: {
-    backgroundColor: "#1C1D21",
+    backgroundColor: colors.footer,
     width: "100%",
     alignSelf: "stretch",
     paddingHorizontal: spacing.lg,
