@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { AppTheme } from "@/constants/theme";
 
@@ -19,6 +20,8 @@ export default function HomeScreen() {
         <View style={styles.stickyHeader}>
           <Header />
         </View>
+        <View style={styles.content}>{/* Main content goes here */}</View>
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   );
@@ -36,5 +39,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.pageBackground,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
+  },
+  content: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
   },
 });
