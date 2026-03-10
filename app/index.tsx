@@ -1,11 +1,9 @@
 import { Image } from "expo-image";
 import { useState } from "react";
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   View,
-  useWindowDimensions,
 } from "react-native";
 import {
   SafeAreaView,
@@ -22,8 +20,7 @@ const HEADER_HEIGHT = 98;
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const { height: windowHeight } = useWindowDimensions();
-  const heroHeight = Platform.OS === "web" ? windowHeight : HERO_HEIGHT;
+  const heroHeight = HERO_HEIGHT;
   const [isScrolled, setIsScrolled] = useState(false);
 
   const handleScroll = (offsetY: number) => {

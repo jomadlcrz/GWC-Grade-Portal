@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import {
   Animated,
   Easing,
-  Platform,
   StyleSheet,
   Text,
   View,
@@ -24,9 +23,6 @@ export function Header({
   mode = "sticky",
 }: HeaderProps) {
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
-  const isWeb = Platform.OS === "web";
-  const displayTitle = isWeb ? `${title} ${subtitle}`.toUpperCase() : title;
-  const displaySubtitle = isWeb ? "" : subtitle;
 
   useEffect(() => {
     Animated.timing(bgAnim, {
@@ -62,18 +58,13 @@ export function Header({
           <Text
             style={[styles.title, mode === "overlay" && styles.overlayText]}
           >
-            {displayTitle}
+            {title}
           </Text>
-          {!isWeb && (
-            <Text
-              style={[
-                styles.subtitle,
-                mode === "overlay" && styles.overlayText,
-              ]}
-            >
-              {displaySubtitle}
-            </Text>
-          )}
+          <Text
+            style={[styles.subtitle, mode === "overlay" && styles.overlayText]}
+          >
+            {subtitle}
+          </Text>
         </View>
       </View>
 
