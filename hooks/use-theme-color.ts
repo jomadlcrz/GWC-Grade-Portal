@@ -6,14 +6,14 @@
 import { Colors } from "@/constants/theme";
 
 export function useThemeColor(
-  props: { light?: string },
+  props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light,
 ) {
-  const colorFromProps = props.light;
+  const colorFromProps = props.light ?? props.dark;
 
   if (colorFromProps) {
     return colorFromProps;
-  } else {
-    return Colors.light[colorName];
   }
+
+  return Colors.light[colorName];
 }

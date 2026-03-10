@@ -2,7 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
-import { AppTheme, palette } from "@/constants/theme";
+import { AppTheme, FontFamilies, palette } from "@/constants/theme";
 
 type FooterProps = {
   bottomInset?: number;
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: typography.subtitle + 2,
     fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
     textTransform: "uppercase",
     color: colors.textOnPrimary,
     letterSpacing: 0.6,
@@ -240,6 +241,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   copyBrand: {
+    fontFamily: FontFamilies.headingBold,
     fontWeight: "800",
   },
   devText: {
@@ -249,6 +251,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   devLabel: {
+    fontFamily: FontFamilies.headingBold,
     fontWeight: "800",
   },
   devName: {

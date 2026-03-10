@@ -8,7 +8,7 @@ import {
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { AppTheme } from "@/constants/theme";
+import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors } = AppTheme;
 const HERO_HEIGHT = 220;
@@ -316,16 +316,19 @@ const stylesSection = StyleSheet.create({
   eventsTitle: {
     fontSize: 44,
     fontWeight: "700",
+    fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.6,
   },
   title: {
     fontSize: 19,
     fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.2,
     paddingHorizontal: 0,
   },
   subtitle: {
     fontSize: 13,
+    fontFamily: FontFamilies.accent,
     color: colors.textSecondary,
     lineHeight: 19,
     paddingHorizontal: 0,
@@ -336,6 +339,7 @@ const stylesFeature = StyleSheet.create({
   h1: {
     fontSize: 40,
     fontWeight: "800",
+    fontFamily: FontFamilies.heading,
     textAlign: "center",
     paddingHorizontal: 10,
     paddingTop: 24,
@@ -357,12 +361,14 @@ const stylesFeature = StyleSheet.create({
   h2: {
     fontSize: 32,
     fontWeight: "700",
+    fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.2,
     marginBottom: 8,
   },
   paragraph: {
     fontSize: 16,
     lineHeight: 18,
+    fontFamily: FontFamilies.body,
     color: colors.textSecondary,
     marginBottom: 16,
     textAlign: "justify",
@@ -371,6 +377,7 @@ const stylesFeature = StyleSheet.create({
     alignSelf: "flex-end",
     fontSize: 16,
     fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
     color: colors.surface,
     backgroundColor: colors.primary,
     paddingHorizontal: 14,
@@ -391,6 +398,7 @@ const stylesFeature = StyleSheet.create({
   h4: {
     fontSize: 24,
     fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
   },
   storyRow: {
     flexDirection: "row",
@@ -405,6 +413,7 @@ const stylesFeature = StyleSheet.create({
     flex: 1,
     fontSize: 12.5,
     fontWeight: "700",
+    fontFamily: FontFamilies.accent,
     color: colors.textPrimary,
   },
 });

@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { AppTheme } from "@/constants/theme";
+import { AppTheme, FontFamilies } from "@/constants/theme";
 
 type HeaderProps = {
   title?: string;
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.title + 4,
     fontWeight: "800",
+    fontFamily: FontFamilies.heading,
     color: colors.primary,
     letterSpacing: 0.2,
     lineHeight: typography.title + 8,
@@ -123,6 +124,7 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: spacing.xs / 4,
     fontSize: typography.subtitle + 1,
+    fontFamily: FontFamilies.accent,
     color: colors.primary,
     letterSpacing: 0.4,
     lineHeight: typography.subtitle + 3,

@@ -85,6 +85,17 @@ export const Colors = {
   },
 };
 
+export const FontFamilies = {
+  body: "OpenSans_400Regular",
+  bodySemi: "OpenSans_600SemiBold",
+  bodyBold: "OpenSans_700Bold",
+  bodyExtraBold: "OpenSans_800ExtraBold",
+  heading: "Montserrat_800ExtraBold",
+  headingBold: "Montserrat_700Bold",
+  accent: "MerriweatherSans_600SemiBold",
+  accentBold: "MerriweatherSans_700Bold",
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
