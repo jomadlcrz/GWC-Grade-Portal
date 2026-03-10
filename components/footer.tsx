@@ -1,10 +1,12 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme, palette } from "@/constants/theme";
 
-type FooterProps = Record<string, never>;
+type FooterProps = {
+  bottomInset?: number;
+};
 
 type BulletItemProps = {
   label: string;
@@ -23,7 +25,7 @@ function BulletItem({ label }: BulletItemProps) {
   );
 }
 
-export function Footer(_: FooterProps) {
+export function Footer({ bottomInset = 0 }: FooterProps) {
   const openLink = (url: string) => {
     Linking.openURL(url);
   };
@@ -109,7 +111,7 @@ export function Footer(_: FooterProps) {
         </View>
       </View>
 
-      <View style={styles.bottomBar}>
+      <View style={getBottomBarStyle(bottomInset)}>
         <Text style={styles.copyText}>
           © Copyright{" "}
           <Text style={styles.copyBrand}>Golden West Colleges, Inc.</Text>
@@ -258,3 +260,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
 });
+
+const getBottomBarStyle = (bottomInset: number) => {
+  // Android soft nav bars can report large insets after resume; only apply extra padding on iOS.
+  const safeInset = Platform.OS === "ios" ? bottomInset : 0;
+  return {
+    ...styles.bottomBar,
+    paddingBottom: spacing.lg + safeInset,
+  };
+};

@@ -96,7 +96,7 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom },
+          { paddingBottom: 0 },
         ]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
@@ -116,7 +116,7 @@ export default function HomeScreen() {
             <SectionCard key={key} sectionKey={key} {...sectionProps} />
           ))}
         </View>
-        <Footer />
+        <Footer bottomInset={insets.bottom} />
       </ScrollView>
 
       <View style={[styles.fixedHeader, { paddingTop: insets.top }]}>
