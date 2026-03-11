@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.gwcgradeportal"
     },
     "web": {
       "output": "static",
@@ -41,6 +42,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b735807a-e5c8-45de-a9c0-c90446b1b112"
+      }
     }
   }
 }
