@@ -27,7 +27,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS === "android") {
-      NavigationBar.setStyle("dark");
+      NavigationBar.setButtonStyleAsync("dark");
     }
   }, []);
 
