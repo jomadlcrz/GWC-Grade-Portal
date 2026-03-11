@@ -1,6 +1,3 @@
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import {
   MerriweatherSans_600SemiBold,
   MerriweatherSans_700Bold,
@@ -18,10 +15,22 @@ import {
   OpenSans_800ExtraBold,
   useFonts as useOpenSans,
 } from "@expo-google-fonts/open-sans";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import * as NavigationBar from "expo-navigation-bar";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { Platform } from "react-native";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      NavigationBar.setStyle("dark");
+    }
+  }, []);
+
   const [openSansLoaded] = useOpenSans({
     OpenSans_400Regular,
     OpenSans_600SemiBold,
@@ -37,7 +46,8 @@ export default function RootLayout() {
     MerriweatherSans_700Bold,
   });
 
-  const fontsLoaded = openSansLoaded && montserratLoaded && merriweatherSansLoaded;
+  const fontsLoaded =
+    openSansLoaded && montserratLoaded && merriweatherSansLoaded;
 
   if (!fontsLoaded) {
     return null;
@@ -54,7 +64,7 @@ export default function RootLayout() {
           />
         </Stack>
 
-        <StatusBar style="dark" translucent={false} backgroundColor="#ffffff" />
+        <StatusBar style="dark" translucent />
       </ThemeProvider>
     </SafeAreaProvider>
   );
