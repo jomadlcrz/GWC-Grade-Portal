@@ -96,10 +96,11 @@ export default function AnnouncementsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.pageBackground,
+    backgroundColor: colors.surface,
   },
   content: {
     gap: spacing.md,
+    backgroundColor: colors.surface,
   },
   hero: {
     paddingHorizontal: spacing.lg,
