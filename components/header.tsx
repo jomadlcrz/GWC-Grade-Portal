@@ -55,7 +55,12 @@ export function Header({
         },
       ]}
     >
-      <View style={styles.leftGroup}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Go to home"
+        onPress={() => router.push("/")}
+        style={styles.leftGroup}
+      >
         <View style={styles.logoWrapper}>
           <Image
             source={require("@/assets/images/gwc-logo-new.png")}
@@ -76,7 +81,7 @@ export function Header({
             {subtitle}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       <View style={styles.actions}>
         {!isOnAnnouncements && (
