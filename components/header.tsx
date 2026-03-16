@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { usePathname, useRouter } from "expo-router";
+import { type Href, usePathname, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Animated,
@@ -18,6 +18,8 @@ type HeaderProps = {
   subtitle?: string;
   mode?: "overlay" | "sticky";
 };
+
+const announcementsHref = "/announcements" as Href;
 
 export function Header({
   title = "GWC",
@@ -81,7 +83,7 @@ export function Header({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Go to announcements"
-            onPress={() => router.push("/announcements")}
+            onPress={() => router.push(announcementsHref)}
             style={styles.iconButton}
           >
             <FontAwesome5 name="bullhorn" size={26} color={colors.surface} />

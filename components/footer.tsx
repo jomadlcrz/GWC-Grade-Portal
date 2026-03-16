@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme, FontFamilies, palette } from "@/constants/theme";
@@ -13,6 +13,8 @@ type BulletItemProps = {
   label: string;
   onPress?: () => void;
 };
+
+const announcementsHref = "/announcements" as Href;
 
 function BulletItem({ label, onPress }: BulletItemProps) {
   return (
@@ -49,7 +51,10 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Security &amp; Brand</Text>
           <View style={styles.list}>
-            <BulletItem label="Announcements" onPress={() => router.push("/announcements")} />
+            <BulletItem
+              label="Announcements"
+              onPress={() => router.push(announcementsHref)}
+            />
             <BulletItem label="Data Privacy Notice" />
             <BulletItem label="Security Issue" />
             <BulletItem label="Copyright Infringement" />
