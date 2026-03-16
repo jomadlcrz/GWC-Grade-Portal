@@ -1,4 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,6 +13,8 @@ type Announcement = {
   title: string;
   body: string;
   date: string;
+  image: string;
+  link?: string;
 };
 
 const { colors, spacing, typography } = AppTheme;
@@ -24,20 +27,32 @@ export default function AnnouncementsScreen() {
       {
         id: "summer-2026-enrollment",
         title: "Summer Term Enrollment Opens",
-        body: "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
+        body:
+          "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
         date: "March 16, 2026",
+        image:
+          "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
+        link: "#",
       },
       {
         id: "library-maintenance",
         title: "Library System Maintenance",
-        body: "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
+        body:
+          "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
         date: "March 16, 2026",
+        image:
+          "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1200&q=80",
+        link: "#",
       },
       {
         id: "graduation-rehearsal",
         title: "Graduation Rehearsal Schedule",
-        body: "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
+        body:
+          "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
         date: "March 15, 2026",
+        image:
+          "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
+        link: "#",
       },
     ],
     [],
@@ -80,9 +95,31 @@ export default function AnnouncementsScreen() {
         <View style={styles.list}>
           {announcements.map((item) => (
             <View key={item.id} style={styles.card}>
-              <Text style={styles.date}>{item.date}</Text>
+              <View style={styles.cardImageWrapper}>
+                <Image
+                  source={{ uri: item.image }}
+                  style={StyleSheet.absoluteFillObject}
+                  contentFit="cover"
+                />
+              </View>
+
               <Text style={styles.title}>{item.title}</Text>
+
+              <View style={styles.metaRow}>
+                <FontAwesome5
+                  name="clock"
+                  size={14}
+                  color={colors.textSecondary}
+                />
+                <Text style={styles.metaLabel}>Posted:</Text>
+                <Text style={styles.date}>{item.date}</Text>
+              </View>
+
               <Text style={styles.body}>{item.body}</Text>
+
+              <View style={styles.cardFooter}>
+                <Text style={styles.readMore}>Read More →</Text>
+              </View>
             </View>
           ))}
         </View>
@@ -126,8 +163,8 @@ const styles = StyleSheet.create({
   },
   noRecent: {
     backgroundColor: colors.primary,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    paddingVertical: 40,
+    paddingHorizontal: 40,
     gap: spacing.xs,
   },
   noRecentText: {
@@ -147,29 +184,47 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   list: {
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
+    paddingHorizontal: 40,
     paddingBottom: spacing.md,
   },
   card: {
     backgroundColor: colors.surface,
     borderRadius: spacing.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md + spacing.xs,
+    paddingTop: 0,
+    paddingBottom: spacing.md + spacing.xs,
     borderWidth: 1,
     borderColor: colors.border,
     gap: spacing.xs,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
+  },
+  cardImageWrapper: {
+    height: 140,
+    marginHorizontal: -spacing.md,
+    marginTop: 0,
+    marginBottom: spacing.md,
+    borderTopLeftRadius: spacing.md,
+    borderTopRightRadius: spacing.md,
+    overflow: "hidden",
+    backgroundColor: colors.mutedSurface,
   },
   date: {
     fontSize: typography.caption + 1,
     color: colors.textSecondary,
     letterSpacing: 0.2,
     fontFamily: FontFamilies.accent,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
+  },
+  metaLabel: {
+    fontSize: typography.body,
+    fontFamily: FontFamilies.headingBold,
+    color: colors.textSecondary,
   },
   title: {
     fontSize: typography.subtitle + 2,
@@ -182,5 +237,17 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.body,
     color: colors.textSecondary,
     lineHeight: typography.body + 6,
+  },
+  cardFooter: {
+    marginTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing.sm,
+    alignItems: "flex-end",
+  },
+  readMore: {
+    fontSize: typography.subtitle,
+    fontFamily: FontFamilies.headingBold,
+    color: colors.primary,
   },
 });
