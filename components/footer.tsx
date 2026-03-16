@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme, FontFamilies, palette } from "@/constants/theme";
@@ -10,9 +11,10 @@ type FooterProps = {
 
 type BulletItemProps = {
   label: string;
+  onPress?: () => void;
 };
 
-function BulletItem({ label }: BulletItemProps) {
+function BulletItem({ label, onPress }: BulletItemProps) {
   return (
     <View style={styles.bulletItem}>
       <FontAwesome5
@@ -20,12 +22,15 @@ function BulletItem({ label }: BulletItemProps) {
         size={13}
         color={colors.textOnPrimary}
       />
-      <Text style={styles.bulletText}>{label}</Text>
+      <Text style={styles.bulletText} onPress={onPress}>
+        {label}
+      </Text>
     </View>
   );
 }
 
 export function Footer({ bottomInset = 0 }: FooterProps) {
+  const router = useRouter();
   const openLink = (url: string) => {
     Linking.openURL(url);
   };
@@ -44,6 +49,7 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Security &amp; Brand</Text>
           <View style={styles.list}>
+            <BulletItem label="Announcements" onPress={() => router.push("/announcements")} />
             <BulletItem label="Data Privacy Notice" />
             <BulletItem label="Security Issue" />
             <BulletItem label="Copyright Infringement" />

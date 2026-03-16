@@ -1,9 +1,11 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { usePathname, useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Animated,
   Easing,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -23,6 +25,12 @@ export function Header({
   mode = "sticky",
 }: HeaderProps) {
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
+  const router = useRouter();
+  const pathname = usePathname();
+  const isOnAnnouncements =
+    pathname === "/announcements" ||
+    pathname === "/announcement" ||
+    pathname?.startsWith("/announcements/");
 
   useEffect(() => {
     Animated.timing(bgAnim, {
@@ -69,7 +77,16 @@ export function Header({
       </View>
 
       <View style={styles.actions}>
-        <FontAwesome5 name="bullhorn" size={26} color={colors.surface} />
+        {!isOnAnnouncements && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Go to announcements"
+            onPress={() => router.push("/announcements")}
+            style={styles.iconButton}
+          >
+            <FontAwesome5 name="bullhorn" size={26} color={colors.surface} />
+          </Pressable>
+        )}
         <FontAwesome5 name="search" size={26} color={colors.surface} />
         <FontAwesome5 name="bars" size={28} color={colors.surface} />
       </View>
@@ -143,5 +160,9 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     alignSelf: "stretch",
     borderRadius: 0,
+  },
+  iconButton: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs,
   },
 });
