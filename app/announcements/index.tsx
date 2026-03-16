@@ -2,7 +2,10 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -27,8 +30,7 @@ export default function AnnouncementsScreen() {
       {
         id: "summer-2026-enrollment",
         title: "Summer Term Enrollment Opens",
-        body:
-          "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
+        body: "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
         date: "March 16, 2026",
         image:
           "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
@@ -37,8 +39,7 @@ export default function AnnouncementsScreen() {
       {
         id: "library-maintenance",
         title: "Library System Maintenance",
-        body:
-          "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
+        body: "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
         date: "March 16, 2026",
         image:
           "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1200&q=80",
@@ -47,8 +48,7 @@ export default function AnnouncementsScreen() {
       {
         id: "graduation-rehearsal",
         title: "Graduation Rehearsal Schedule",
-        body:
-          "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
+        body: "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
         date: "March 15, 2026",
         image:
           "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
@@ -59,10 +59,7 @@ export default function AnnouncementsScreen() {
   );
 
   return (
-    <SafeAreaView
-      edges={["top", "left", "right"]}
-      style={styles.container}
-    >
+    <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
       {/* Keep the global header branding; do not rename */}
       <Header />
 
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
   },
   noRecentText: {
     color: colors.surface,
-    fontSize: typography.title,
+    fontSize: 32,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
   },
@@ -178,7 +175,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   sectionHeadingText: {
-    fontSize: typography.title - 2,
+    fontSize: 32,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
     color: colors.textPrimary,
@@ -227,7 +224,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   title: {
-    fontSize: typography.subtitle + 2,
+    fontSize: 24,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
     color: colors.textPrimary,
@@ -246,7 +243,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   readMore: {
-    fontSize: typography.subtitle,
+    fontSize: 16,
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,
   },
