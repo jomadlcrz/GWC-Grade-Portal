@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -18,68 +18,11 @@ import { StatusBar } from "expo-status-bar";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
-type SearchItem = {
-  id: string;
-  title: string;
-  snippet: string;
-  category: string;
-  date: string;
-};
-
 const { colors, spacing, typography } = AppTheme;
 
 export default function SearchScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-
-  const data = useMemo<SearchItem[]>(
-    () => [
-      {
-        id: "summer-2026-enrollment",
-        title: "Summer Term Enrollment Opens",
-        snippet:
-          "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
-        category: "Announcements",
-        date: "March 16, 2026",
-      },
-      {
-        id: "library-maintenance",
-        title: "Library System Maintenance",
-        snippet:
-          "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
-        category: "Announcements",
-        date: "March 16, 2026",
-      },
-      {
-        id: "graduation-rehearsal",
-        title: "Graduation Rehearsal Schedule",
-        snippet:
-          "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
-        category: "Announcements",
-        date: "March 15, 2026",
-      },
-      {
-        id: "global-arena",
-        title: "DAAD Hosts Info Session at GWC",
-        snippet:
-          "Insights on international academic exchange with partners across the globe.",
-        category: "News",
-        date: "March 10, 2026",
-      },
-      {
-        id: "community-drive",
-        title: "Student Council Service Drive",
-        snippet:
-          "Campus-wide initiative from the Student Council to support local communities.",
-        category: "Community",
-        date: "March 08, 2026",
-      },
-    ],
-    [],
-  );
-
-  // Dynamic filtering intentionally disabled.
-  const filtered: SearchItem[] = [];
 
   const handleSearch = () => {
     Keyboard.dismiss();
