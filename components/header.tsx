@@ -94,7 +94,14 @@ export function Header({
             <FontAwesome5 name="bullhorn" size={26} color={colors.surface} />
           </Pressable>
         )}
-        <FontAwesome5 name="search" size={26} color={colors.surface} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open search"
+          onPress={() => router.push("/search")}
+          style={styles.iconButton}
+        >
+          <FontAwesome5 name="search" size={26} color={colors.surface} />
+        </Pressable>
         <FontAwesome5 name="bars" size={28} color={colors.surface} />
       </View>
     </Animated.View>

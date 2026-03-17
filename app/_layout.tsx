@@ -65,6 +65,7 @@ export default function RootLayout() {
             name="announcements/index"
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="search" options={{ headerShown: false }} />
         </Stack>
 
         <StatusBar style="dark" translucent />
