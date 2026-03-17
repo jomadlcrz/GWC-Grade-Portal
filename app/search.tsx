@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: spacing.md + spacing.xs,
     minHeight: 98,
+    paddingRight: spacing.md + spacing.sm,
   },
   logoRow: {
     flexDirection: "row",
@@ -247,7 +248,8 @@ const styles = StyleSheet.create({
     lineHeight: typography.subtitle + 3,
   },
   closeButton: {
-    padding: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs,
   },
   headerAccent: {
     height: 3,
