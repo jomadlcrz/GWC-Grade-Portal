@@ -94,7 +94,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <View style={styles.headerBar}>
@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg + 8,
     paddingVertical: spacing.xl,
+    paddingBottom: spacing.xl * 2,
     gap: spacing.xl,
   },
   searchBox: {
