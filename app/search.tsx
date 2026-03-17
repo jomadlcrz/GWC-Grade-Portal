@@ -1,4 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -21,14 +22,14 @@ import { Header } from "@/components/header";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
-const { colors, spacing } = AppTheme;
+const { colors, spacing, typography } = AppTheme;
 
 type SearchRecord = {
   id: string;
   title: string;
-  category: string;
-  routeLabel: string;
   summary: string;
+  date: string;
+  image: string;
   keywords: string[];
 };
 
@@ -36,91 +37,106 @@ const SEARCH_RECORDS: SearchRecord[] = [
   {
     id: "global-arena",
     title: "DAAD Hosts Info Session at GWC for International Academic Exchange",
-    category: "Global Arena",
-    routeLabel: "Home",
     summary:
       "International academic exchange opportunities for students, faculty, and staff through partner institutions.",
+    date: "March 18, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
     keywords: ["daad", "exchange", "international", "academic", "global"],
   },
   {
     id: "community",
     title: "Student Council Launches Campus-Wide Service Drive",
-    category: "Community",
-    routeLabel: "Home",
     summary:
       "Student life, organizations, and collaboration spaces that keep the GWC family connected.",
-    keywords: ["student council", "service drive", "community", "organizations"],
+    date: "March 18, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
+    keywords: [
+      "student council",
+      "service drive",
+      "community",
+      "organizations",
+    ],
   },
   {
     id: "story-asean",
     title: "Student Delegates Join ASEAN Youth Forum",
-    category: "More Stories",
-    routeLabel: "Home",
     summary:
       "A featured student story about delegates representing GWC in a regional youth forum.",
+    date: "March 17, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
     keywords: ["asean", "youth forum", "delegates", "students"],
   },
   {
     id: "story-research-hub",
     title: "New Research Hub Opens for Engineering Cohort",
-    category: "More Stories",
-    routeLabel: "Home",
     summary:
       "A new research space opens to support engineering students and academic collaboration.",
+    date: "March 17, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
     keywords: ["research hub", "engineering", "cohort", "laboratory"],
   },
   {
     id: "events",
     title: "Events",
-    category: "Events",
-    routeLabel: "Home",
     summary:
       "Schedules, registration, and on-campus happenings collected in the events section.",
+    date: "March 16, 2026",
+    image:
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
     keywords: ["events", "schedule", "registration", "campus happenings"],
   },
   {
     id: "perspective",
     title: "Plastic Free Advocacy",
-    category: "Perspectives + Opinions",
-    routeLabel: "Home",
     summary:
       "A perspective piece on zero-waste plastic management and campus sustainability advocacy.",
+    date: "March 16, 2026",
+    image:
+      "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&w=1200&q=80",
     keywords: ["plastic free", "zero waste", "advocacy", "sustainability"],
   },
   {
     id: "careers",
     title: "Available Faculty Positions",
-    category: "Careers",
-    routeLabel: "Home",
     summary:
       "Faculty openings including Instructor I, Instructor II, and Instructor III positions.",
+    date: "March 15, 2026",
+    image:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     keywords: ["careers", "faculty", "instructor", "vacant", "salary grade"],
   },
   {
     id: "announcement-summer-2026-enrollment",
     title: "Summer Term Enrollment Opens",
-    category: "Announcement",
-    routeLabel: "Announcements",
     summary:
       "Enrollment for Summer 2026 starts on March 25. Outstanding balances must be settled before proceeding.",
+    date: "March 16, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
     keywords: ["summer", "enrollment", "march 25", "balances"],
   },
   {
     id: "announcement-library-maintenance",
     title: "Library System Maintenance",
-    category: "Announcement",
-    routeLabel: "Announcements",
     summary:
       "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
+    date: "March 16, 2026",
+    image:
+      "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1200&q=80",
     keywords: ["library", "maintenance", "system", "march 20", "upgrades"],
   },
   {
     id: "announcement-graduation-rehearsal",
     title: "Graduation Rehearsal Schedule",
-    category: "Announcement",
-    routeLabel: "Announcements",
     summary:
       "Graduating students will rehearse on April 5 at the main auditorium, with attendance marked mandatory.",
+    date: "March 15, 2026",
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
     keywords: ["graduation", "rehearsal", "april 5", "auditorium"],
   },
 ];
@@ -181,11 +197,7 @@ type TablePanelProps = {
   results: SearchRecord[];
 };
 
-function TablePanel({
-  hasSearched,
-  searchedQuery,
-  results,
-}: TablePanelProps) {
+function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
   return (
     <View style={styles.tablePanel}>
       <View style={styles.tableHeader}>
@@ -208,22 +220,27 @@ function TablePanel({
         ) : (
           <View style={styles.resultsList}>
             <Text style={styles.resultsCount}>
-              {results.length} result{results.length === 1 ? "" : "s"} for
-              {" "}
+              {results.length} result{results.length === 1 ? "" : "s"} for{" "}
               &quot;{searchedQuery}&quot;
             </Text>
 
             {results.map((result) => (
               <View key={result.id} style={styles.resultCard}>
-                <View style={styles.resultHeader}>
-                  <View style={styles.resultBadge}>
-                    <Text style={styles.resultBadgeText}>{result.category}</Text>
-                  </View>
-                  <Text style={styles.resultRoute}>{result.routeLabel}</Text>
+                <View style={styles.resultImageWrapper}>
+                  <Image
+                    source={{ uri: result.image }}
+                    style={StyleSheet.absoluteFillObject}
+                    contentFit="cover"
+                  />
                 </View>
 
                 <Text style={styles.resultTitle}>{result.title}</Text>
+                <Text style={styles.resultDate}>Posted: {result.date}</Text>
                 <Text style={styles.resultSummary}>{result.summary}</Text>
+
+                <View style={styles.resultFooter}>
+                  <Text style={styles.resultReadMore}>Read More</Text>
+                </View>
               </View>
             ))}
           </View>
@@ -243,8 +260,8 @@ export default function SearchScreen() {
 
   useEffect(() => {
     const routeQuery = Array.isArray(params.query)
-      ? params.query[0] ?? ""
-      : params.query ?? "";
+      ? (params.query[0] ?? "")
+      : (params.query ?? "");
 
     const trimmedRouteQuery = routeQuery.trim();
 
@@ -272,9 +289,8 @@ export default function SearchScreen() {
     return SEARCH_RECORDS.filter((record) => {
       const haystack = [
         record.title,
-        record.category,
-        record.routeLabel,
         record.summary,
+        record.date,
         ...record.keywords,
       ]
         .join(" ")
@@ -310,7 +326,7 @@ export default function SearchScreen() {
             value={query}
             onChangeText={setQuery}
             onSubmit={handleSearch}
-            placeholder="Search announcements, stories, and campus updates"
+            placeholder="Search"
           />
         </View>
 
@@ -416,47 +432,52 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   resultCard: {
-    gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingTop: 0,
+    paddingBottom: spacing.md + spacing.xs,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.pageBackground,
-    padding: spacing.lg,
+    gap: spacing.xs,
   },
-  resultHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.sm,
-  },
-  resultBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: colors.primary,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  resultBadgeText: {
-    color: colors.surface,
-    fontSize: 12,
-    fontFamily: FontFamilies.accentBold,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  resultRoute: {
-    fontSize: 14,
-    fontFamily: FontFamilies.bodySemi,
-    color: colors.textMuted,
+  resultImageWrapper: {
+    height: 140,
+    marginHorizontal: -spacing.md,
+    marginBottom: spacing.md,
+    borderTopLeftRadius: spacing.md,
+    borderTopRightRadius: spacing.md,
+    overflow: "hidden",
+    backgroundColor: colors.mutedSurface,
   },
   resultTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontFamily: FontFamilies.headingBold,
     color: colors.textPrimary,
-    lineHeight: 30,
+  },
+  resultDate: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontFamily: FontFamilies.accent,
+    marginTop: spacing.xs,
+    marginBottom: spacing.sm,
   },
   resultSummary: {
-    fontSize: 16,
+    fontSize: typography.body + 1,
     fontFamily: FontFamilies.body,
     color: colors.textSecondary,
-    lineHeight: 24,
+    lineHeight: typography.body + 6,
+  },
+  resultFooter: {
+    marginTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing.sm,
+    alignItems: "flex-end",
+  },
+  resultReadMore: {
+    fontSize: 16,
+    fontFamily: FontFamilies.headingBold,
+    color: colors.primary,
   },
 });
