@@ -235,7 +235,14 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
                 </View>
 
                 <Text style={styles.resultTitle}>{result.title}</Text>
-                <Text style={styles.resultDate}>Posted: {result.date}</Text>
+                <View style={styles.resultMetaRow}>
+                  <FontAwesome5
+                    name="clock"
+                    size={14}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={styles.resultDate}>Posted: {result.date}</Text>
+                </View>
                 <Text style={styles.resultSummary}>{result.summary}</Text>
 
                 <View style={styles.resultFooter}>
@@ -459,6 +466,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
     fontFamily: FontFamilies.accent,
+  },
+  resultMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
     marginTop: spacing.xs,
     marginBottom: spacing.sm,
   },

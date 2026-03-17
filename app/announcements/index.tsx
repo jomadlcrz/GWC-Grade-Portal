@@ -110,8 +110,7 @@ export default function AnnouncementsScreen() {
                   size={14}
                   color={colors.textSecondary}
                 />
-                <Text style={styles.metaLabel}>Posted:</Text>
-                <Text style={styles.date}>{item.date}</Text>
+                <Text style={styles.date}>Posted: {item.date}</Text>
               </View>
 
               <Text style={styles.body}>{item.body}</Text>
@@ -210,9 +209,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.mutedSurface,
   },
   date: {
-    fontSize: typography.caption + 1,
-    color: colors.textSecondary,
-    letterSpacing: 0.2,
+    fontSize: 12,
+    color: colors.textMuted,
     fontFamily: FontFamilies.accent,
   },
   metaRow: {
@@ -221,11 +219,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginTop: spacing.xs,
     marginBottom: spacing.sm,
-  },
-  metaLabel: {
-    fontSize: typography.body,
-    fontFamily: FontFamilies.headingBold,
-    color: colors.textSecondary,
   },
   title: {
     fontSize: 24,
