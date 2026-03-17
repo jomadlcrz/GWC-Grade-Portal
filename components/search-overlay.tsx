@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Keyboard,
@@ -29,9 +30,22 @@ const ACCENT = colors.primary;
 
 export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
+  const router = useRouter();
 
   const handleSearch = () => {
+    const trimmedQuery = query.trim();
+
     Keyboard.dismiss();
+    onClose();
+
+    if (!trimmedQuery) {
+      return;
+    }
+
+    router.push({
+      pathname: "/search",
+      params: { query: trimmedQuery },
+    });
   };
 
   return (
