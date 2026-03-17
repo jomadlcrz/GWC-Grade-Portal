@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "GWC Grade Portal",
-    "slug": "gwc-grade-portal",
+    "slug": "gwc-grade-portal-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gwc-grade-portal",
+    "scheme": "gwc-grade-portal-app",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -53,7 +53,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b735807a-e5c8-45de-a9c0-c90446b1b112"
+        "projectId": "2fe51f4e-dc1f-4fa7-a186-d4b8a60e4c78"
       }
     }
   }
