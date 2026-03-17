@@ -2,12 +2,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import {
   Keyboard,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   View,
+  useWindowDimensions
 } from "react-native";
 import {
   SafeAreaView,
@@ -19,9 +20,8 @@ import { Header } from "@/components/header";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
-const { colors, spacing, typography } = AppTheme;
+const { colors, spacing } = AppTheme;
 
-// Extracted SearchBar component for reusability
 interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
@@ -60,24 +60,44 @@ function SearchBar({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Submit search"
-        accessibilityHint="Performs the search with the entered text"
         style={({ pressed }) => [
           styles.searchButton,
           pressed && styles.searchButtonPressed,
         ]}
         onPress={handleSubmit}
       >
-        <FontAwesome5 name="search" size={22} color={colors.surface} />
+        <FontAwesome5 name="search" size={28} color={colors.surface} />
       </Pressable>
     </View>
   );
 }
 
-// Main screen component
+function TablePanel() {
+  return (
+    <View style={styles.tablePanel}>
+      <div style={styles.tableHeader}>
+        <Text style={styles.tableHeaderText}>Search Results</Text>
+      </div>
+      <View style={styles.tableContent}>
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>
+            Sorry, you must enter at least one search criteria before you can
+            continue
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  // Responsive padding: use 40 only if screen is wide enough
+  const horizontalPadding = width < 400 ? 20 : 40;
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -93,18 +113,25 @@ export default function SearchScreen() {
       />
 
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: 0 }]}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.landingSection}>
+        <View
+          style={[
+            styles.landingSection,
+            { paddingHorizontal: horizontalPadding },
+          ]}
+        >
           <SearchBar
             value={query}
             onChangeText={setQuery}
             onSubmit={handleSearch}
-            placeholder="Search"
-            autoFocus={false}
           />
+        </View>
+
+        <View style={{ paddingHorizontal: horizontalPadding }}>
+          <TablePanel />
         </View>
 
         <Footer bottomInset={insets.bottom} />
@@ -125,57 +152,70 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: colors.pageBackground,
-    // Removed gap
-    paddingHorizontal: 0,
-    paddingTop: 0,
     paddingBottom: 0,
   },
   landingSection: {
-    backgroundColor: colors.pageBackground,
-    // Added 40px padding all around
-    padding: 40,
-    marginHorizontal: 0,
-    marginTop: 0,
+    paddingVertical: 40,
   },
   searchRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "stretch", // Ensures children fill height
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 0,
+    height: 80,
+    width: "100%",
     overflow: "hidden",
-    height: 56,
   },
   input: {
-    flex: 1,
+    flex: 1, // Takes up remaining space
+    minWidth: 0, // Allows input to shrink below its content width
     height: "100%",
     paddingHorizontal: spacing.lg,
-    fontSize: typography.body,
+    fontSize: 24, // Slightly reduced for mobile fit; stays large
     fontFamily: FontFamilies.body,
     color: colors.textPrimary,
-    backgroundColor: colors.surface,
-    ...Platform.select({
-      ios: {
-        paddingVertical: 0,
-      },
-      android: {
-        paddingVertical: 0,
-        textAlignVertical: "center",
-      },
-    }),
   },
   searchButton: {
-    width: 56,
-    height: 56,
+    width: 80,
+    flexShrink: 0, // CRITICAL: Prevents button from disappearing on small screens
     backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 0,
-    paddingVertical: 0,
   },
   searchButtonPressed: {
-    backgroundColor: colors.primary,
     opacity: 0.8,
+  },
+  tablePanel: {
+    marginBottom: 40,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  tableHeader: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.pageBackground || colors.surface,
+  },
+  tableHeaderText: {
+    fontSize: 24,
+    fontFamily: FontFamilies.body,
+    color: colors.textPrimary,
+  },
+  tableContent: {
+    padding: spacing.xl,
+    minHeight: 200,
+  },
+  messageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  messageText: {
+    fontSize: 22,
+    fontFamily: FontFamilies.body,
+    color: colors.textSecondary,
+    textAlign: "center",
+    lineHeight: 22 * 1.4,
   },
 });
