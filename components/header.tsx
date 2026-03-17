@@ -18,6 +18,7 @@ type HeaderProps = {
   subtitle?: string;
   mode?: "overlay" | "sticky";
   onSearchPress?: () => void;
+  hideAnnouncementsIcon?: boolean;
 };
 
 const announcementsHref = "/announcements" as Href;
@@ -27,6 +28,7 @@ export function Header({
   subtitle = "Grade Portal",
   mode = "sticky",
   onSearchPress,
+  hideAnnouncementsIcon = false,
 }: HeaderProps) {
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
   const router = useRouter();
@@ -86,7 +88,7 @@ export function Header({
       </Pressable>
 
       <View style={styles.actions}>
-        {!isOnAnnouncements && (
+        {!hideAnnouncementsIcon && !isOnAnnouncements && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Go to announcements"
