@@ -3,6 +3,8 @@ import { Image } from "expo-image";
 import { useMemo, useState } from "react";
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -96,7 +98,11 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
         <View style={styles.headerBar}>
           <View style={styles.logoRow}>
             <View style={styles.logoWrapper}>
@@ -184,7 +190,7 @@ export default function SearchScreen() {
             </View>
           )}
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
