@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -13,10 +14,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
+
+type SearchOverlayProps = {
+  visible: boolean;
+  onClose: () => void;
+};
 
 type SearchItem = {
   id: string;
@@ -27,9 +32,10 @@ type SearchItem = {
 };
 
 const { colors, spacing, typography } = AppTheme;
+const DARK_BG = "#0d1424";
+const ACCENT = colors.primary;
 
-export default function SearchScreen() {
-  const router = useRouter();
+export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
 
   const data = useMemo<SearchItem[]>(
@@ -78,7 +84,7 @@ export default function SearchScreen() {
     [],
   );
 
-  // Dynamic filtering intentionally disabled.
+  // Dynamic filtering intentionally removed; search UX is disabled for now.
   const filtered: SearchItem[] = [];
 
   const handleSearch = () => {
@@ -86,74 +92,79 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
-        <View style={styles.headerBar}>
-          <View style={styles.logoRow}>
-            <View style={styles.logoWrapper}>
-              <Image
-                source={require("@/assets/images/gwc-logo-new-white.png")}
-                style={styles.logo}
-                contentFit="contain"
-              />
-            </View>
-            <View style={styles.textGroup}>
-              <Text style={styles.headerTitle}>GWC</Text>
-              <Text style={styles.headerSubtitle}>Grade Portal</Text>
-            </View>
-          </View>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Close search"
-            onPress={() => router.back()}
-            style={styles.closeButton}
-          >
-            <FontAwesome5 name="times-circle" size={28} color="#e6e6e6" />
-          </Pressable>
-        </View>
-
-        <View style={styles.headerAccent} />
-
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+    <Modal
+      visible={visible}
+      animationType="fade"
+      presentationStyle="fullScreen"
+      onRequestClose={onClose}
+      transparent={false}
+    >
+      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
+        <StatusBar style="light" translucent backgroundColor="transparent" />
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
-          <View style={styles.searchBox}>
-            <TextInput
-              placeholder="type keyword(s) here"
-              placeholderTextColor="#8b8b93"
-              value={query}
-              onChangeText={setQuery}
-              style={styles.input}
-              returnKeyType="search"
-              onSubmitEditing={handleSearch}
-            />
+          <View style={styles.headerBar}>
+            <View style={styles.logoRow}>
+              <View style={styles.logoWrapper}>
+                <Image
+                  source={require("@/assets/images/gwc-logo-new-white.png")}
+                  style={styles.logo}
+                  contentFit="contain"
+                />
+              </View>
+              <View style={styles.textGroup}>
+                <Text style={styles.headerTitle}>GWC</Text>
+                <Text style={styles.headerSubtitle}>Grade Portal</Text>
+              </View>
+            </View>
+
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Search"
-              onPress={handleSearch}
-              style={styles.searchButton}
+              accessibilityLabel="Close search"
+              onPress={onClose}
+              style={styles.closeButton}
             >
-              <Text style={styles.searchButtonText}>Search</Text>
-              <FontAwesome5 name="search" size={18} color="#fff" />
+              <FontAwesome5 name="times-circle" size={28} color="#e6e6e6" />
             </Pressable>
           </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          <View style={styles.headerAccent} />
+
+          <ScrollView
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.searchBox}>
+              <TextInput
+                placeholder="type keyword(s) here"
+                placeholderTextColor="#8b8b93"
+                value={query}
+                onChangeText={setQuery}
+                style={styles.input}
+                returnKeyType="search"
+                onSubmitEditing={handleSearch}
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Search"
+                onPress={handleSearch}
+                style={styles.searchButton}
+              >
+                <Text style={styles.searchButtonText}>Search</Text>
+                <FontAwesome5 name="search" size={18} color="#fff" />
+              </Pressable>
+            </View>
+
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </Modal>
   );
 }
-
-const DARK_BG = "#0d1424";
-const ACCENT = colors.primary;
 
 const styles = StyleSheet.create({
   safeArea: {

@@ -17,6 +17,7 @@ type HeaderProps = {
   title?: string;
   subtitle?: string;
   mode?: "overlay" | "sticky";
+  onSearchPress?: () => void;
 };
 
 const announcementsHref = "/announcements" as Href;
@@ -25,6 +26,7 @@ export function Header({
   title = "GWC",
   subtitle = "Grade Portal",
   mode = "sticky",
+  onSearchPress,
 }: HeaderProps) {
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
   const router = useRouter();
@@ -97,7 +99,13 @@ export function Header({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Open search"
-          onPress={() => router.push("/search")}
+          onPress={() => {
+            if (onSearchPress) {
+              onSearchPress();
+              return;
+            }
+            router.push("/search");
+          }}
           style={styles.iconButton}
         >
           <FontAwesome5 name="search" size={26} color={colors.surface} />

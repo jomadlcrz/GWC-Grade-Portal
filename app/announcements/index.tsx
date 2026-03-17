@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
@@ -9,6 +9,7 @@ import {
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 type Announcement = {
@@ -24,6 +25,7 @@ const { colors, spacing, typography } = AppTheme;
 
 export default function AnnouncementsScreen() {
   const insets = useSafeAreaInsets();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const announcements = useMemo<Announcement[]>(
     () => [
@@ -61,7 +63,7 @@ export default function AnnouncementsScreen() {
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
       {/* Keep the global header branding; do not rename */}
-      <Header />
+      <Header onSearchPress={() => setIsSearchOpen(true)} />
 
       <ScrollView
         contentContainerStyle={[
@@ -123,6 +125,8 @@ export default function AnnouncementsScreen() {
 
         <Footer bottomInset={insets.bottom} />
       </ScrollView>
+
+      <SearchOverlay visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </SafeAreaView>
   );
 }
