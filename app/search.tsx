@@ -10,10 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
@@ -31,7 +28,6 @@ const { colors, spacing, typography } = AppTheme;
 
 export default function SearchScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
 
   const data = useMemo<SearchItem[]>(
@@ -287,11 +283,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 10,
-    shadowColor: "#d2132f",
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 6,
   },
   searchButtonText: {
     color: "#fff",
