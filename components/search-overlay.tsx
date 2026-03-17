@@ -32,6 +32,12 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
   const router = useRouter();
 
+  const handleHomePress = () => {
+    Keyboard.dismiss();
+    onClose();
+    router.push("/");
+  };
+
   const handleSearch = () => {
     const trimmedQuery = query.trim();
 
@@ -64,7 +70,12 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <View style={styles.headerBar}>
-            <View style={styles.logoRow}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Go to home"
+              onPress={handleHomePress}
+              style={styles.logoRow}
+            >
               <View style={styles.logoWrapper}>
                 <Image
                   source={require("@/assets/images/gwc-logo-new-white.png")}
@@ -76,7 +87,7 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                 <Text style={styles.headerTitle}>GWC</Text>
                 <Text style={styles.headerSubtitle}>Grade Portal</Text>
               </View>
-            </View>
+            </Pressable>
 
             <Pressable
               accessibilityRole="button"
