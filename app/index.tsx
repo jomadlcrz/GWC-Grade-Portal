@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -132,7 +132,10 @@ export default function HomeScreen() {
         />
       </View>
 
-      <SearchOverlay visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchOverlay
+        visible={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
       <MenuOverlay visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </SafeAreaView>
   );
@@ -231,26 +234,64 @@ function SectionCard({
 
           <View style={stylesFeature.moreStories}>
             <Text style={stylesFeature.h4}>More Stories:</Text>
-            <View style={stylesFeature.storyRow}>
-              <Image
-                source={{ uri: image }}
-                style={stylesFeature.storyThumb}
-                contentFit="cover"
-              />
-              <Text style={stylesFeature.storyTitle}>
-                Student Delegates Join ASEAN Youth Forum
-              </Text>
-            </View>
-            <View style={stylesFeature.storyRow}>
-              <Image
-                source={{ uri: image }}
-                style={stylesFeature.storyThumb}
-                contentFit="cover"
-              />
-              <Text style={stylesFeature.storyTitle}>
-                New Research Hub Opens for Engineering Cohort
-              </Text>
-            </View>
+            <Pressable
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
+                stylesFeature.storyRow,
+                (hovered || pressed) && stylesFeature.storyRowActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
+                <>
+                  <View style={stylesFeature.storyCard}>
+                    <Image
+                      source={{ uri: image }}
+                      style={stylesFeature.storyThumb}
+                      contentFit="cover"
+                    />
+                  </View>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[
+                      stylesFeature.storyTitle,
+                      (hovered || pressed) && stylesFeature.storyTitleActive,
+                    ]}
+                  >
+                    Student Delegates Join ASEAN Youth Forum
+                  </Text>
+                </>
+              )}
+            </Pressable>
+            <Pressable
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
+                stylesFeature.storyRow,
+                (hovered || pressed) && stylesFeature.storyRowActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
+                <>
+                  <View style={stylesFeature.storyCard}>
+                    <Image
+                      source={{ uri: image }}
+                      style={stylesFeature.storyThumb}
+                      contentFit="cover"
+                    />
+                  </View>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[
+                      stylesFeature.storyTitle,
+                      (hovered || pressed) && stylesFeature.storyTitleActive,
+                    ]}
+                  >
+                    New Research Hub Opens for Engineering Cohort
+                  </Text>
+                </>
+              )}
+            </Pressable>
           </View>
         </View>
       </View>
@@ -293,7 +334,9 @@ function SectionCard({
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
         <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
-        <Text style={stylesCareers.h2}>CURRENTLY NO VACANT POSITION AVAILABLE</Text>
+        <Text style={stylesCareers.h2}>
+          CURRENTLY NO VACANT POSITION AVAILABLE
+        </Text>
         <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
         <View style={stylesCareers.list}>
           {facultyPositions.map(({ id, count, grade, salary }) => (
@@ -499,19 +542,44 @@ const stylesFeature = StyleSheet.create({
     fontFamily: FontFamilies.headingBold,
   },
   storyRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 10,
+  },
+  storyRowActive: {
+    opacity: 0.92,
   },
   storyThumb: {
-    width: 64,
-    height: 64,
+    width: "100%",
+    height: 190,
+    borderRadius: 0,
+  },
+  storyFrame: {
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.surface,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  storyCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 0.5,
+    borderColor: colors.border,
+    borderRadius: 4,
+    padding: 4,
   },
   storyTitle: {
-    flex: 1,
-    fontSize: 12.5,
-    fontWeight: "700",
+    alignSelf: "stretch",
+    fontSize: 16,
+    fontWeight: "800",
     fontFamily: FontFamilies.accent,
+    color: "#d4a017", // deeper gold for better contrast
+    textAlign: "left",
+    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
+  },
+  storyTitleActive: {
     color: colors.textPrimary,
   },
 });
