@@ -140,6 +140,8 @@ const colors = {
   footer: themeColors.footer,
 };
 
+const FOOTER_PADDING = 30;
+
 const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: colors.background,
@@ -243,8 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.footer,
     width: "100%",
     alignSelf: "stretch",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
+    padding: FOOTER_PADDING,
     alignItems: "center",
     gap: spacing.sm,
     borderTopWidth: 1,
@@ -285,6 +286,6 @@ const getBottomBarStyle = (bottomInset: number) => {
   const safeInset = Platform.OS === "ios" ? bottomInset : 0;
   return {
     ...styles.bottomBar,
-    paddingBottom: spacing.lg + safeInset,
+    paddingBottom: FOOTER_PADDING + safeInset,
   };
 };
