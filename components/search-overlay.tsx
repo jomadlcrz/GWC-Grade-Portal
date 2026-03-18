@@ -104,6 +104,7 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                 <Image
                   source={require("@/assets/images/gwc-logo-new-white.png")}
                   style={styles.logo}
+                  cachePolicy="memory-disk"
                   contentFit="contain"
                 />
               </View>

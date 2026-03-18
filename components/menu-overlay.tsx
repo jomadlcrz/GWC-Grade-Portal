@@ -70,6 +70,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
               <Image
                 source={require("@/assets/images/gwc-logo-new-white.png")}
                 style={styles.logo}
+                cachePolicy="memory-disk"
                 contentFit="contain"
               />
             </View>
