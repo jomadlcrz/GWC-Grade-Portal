@@ -201,12 +201,14 @@ const styles = StyleSheet.create({
   contactGroup: {
     gap: spacing.sm,
     alignItems: "center",
+    maxWidth: 360,
   },
   linkText: {
     color: colors.textOnPrimary,
     fontSize: typography.body,
     lineHeight: typography.body + 6,
     textAlign: "center",
+    alignSelf: "center",
   },
   socialRow: {
     flexDirection: "row",
@@ -232,6 +234,7 @@ const styles = StyleSheet.create({
   addressLine: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
   },
   addressIcon: {
@@ -241,8 +244,9 @@ const styles = StyleSheet.create({
     color: colors.textOnPrimary,
     fontSize: typography.body,
     lineHeight: typography.body + 6,
-    textAlign: "left",
+    textAlign: "center",
     flexShrink: 1,
+    alignSelf: "center",
   },
   bottomBar: {
     backgroundColor: colors.footer,
