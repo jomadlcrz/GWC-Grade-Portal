@@ -1,6 +1,13 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { Linking, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Linking,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { AppTheme, FontFamilies, palette } from "@/constants/theme";
 
@@ -21,9 +28,19 @@ function BulletItem({ label, onPress }: BulletItemProps) {
         size={13}
         color={colors.textOnPrimary}
       />
-      <Text style={styles.bulletText} onPress={onPress}>
-        {label}
-      </Text>
+      <Pressable
+        onPress={onPress}
+        // @ts-ignore hovered is web-only; pressed covers mobile
+        style={({ hovered, pressed }) =>
+          (hovered || pressed) && styles.activeState
+        }
+      >
+        {({ hovered, pressed }) => (
+          <Text style={[styles.bulletText, (hovered || pressed) && styles.hoverText]}>
+            {label}
+          </Text>
+        )}
+      </Pressable>
     </View>
   );
 }
@@ -56,36 +73,53 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Get in Touch</Text>
           <View style={styles.contactGroup}>
-            <Text
-              style={styles.linkText}
-              onPress={() =>
-                openLink("mailto:goldenwest.colleges@yahoo.com.ph")
+            <Pressable
+              onPress={() => openLink("mailto:goldenwest.colleges@yahoo.com.ph")}
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) =>
+                (hovered || pressed) && styles.activeState
               }
             >
-              goldenwest.colleges@yahoo.com.ph
-            </Text>
-            <Text
-              style={styles.linkText}
+              {({ hovered, pressed }) => (
+                <Text style={[styles.linkText, (hovered || pressed) && styles.hoverText]}>
+                  goldenwest.colleges@yahoo.com.ph
+                </Text>
+              )}
+            </Pressable>
+            <Pressable
               onPress={() => openLink("tel:09165969881")}
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) =>
+                (hovered || pressed) && styles.activeState
+              }
             >
-              0916 596 9881
-            </Text>
+              {({ hovered, pressed }) => (
+                <Text style={[styles.linkText, (hovered || pressed) && styles.hoverText]}>
+                  0916 596 9881
+                </Text>
+              )}
+            </Pressable>
           </View>
 
           <View style={styles.socialRow}>
-            <View style={styles.iconBackground}>
-              <Text
-                onPress={() =>
-                  openLink("https://www.facebook.com/gwcalaminosofficial")
-                }
-              >
+            <Pressable
+              onPress={() =>
+                openLink("https://www.facebook.com/gwcalaminosofficial")
+              }
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
+                styles.iconBackground,
+                (hovered || pressed) && styles.iconBackgroundActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
                 <FontAwesome5
                   name="facebook-f"
                   size={18}
-                  color={colors.textOnPrimary}
+                  color={hovered || pressed ? colors.hoverGold : colors.textOnPrimary}
                 />
-              </Text>
-            </View>
+              )}
+            </Pressable>
           </View>
         </View>
 
@@ -99,16 +133,23 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
                 color={colors.textOnPrimary}
                 style={styles.addressIcon}
               />
-              <Text
-                style={styles.addressText}
+              <Pressable
                 onPress={() =>
                   openLink(
                     "https://www.google.com/maps/search/?api=1&query=San+Jose+Drive,+Alaminos,+Pangasinan,+2404",
                   )
                 }
+                // @ts-ignore hovered is web-only; pressed covers mobile
+                style={({ hovered, pressed }) =>
+                  (hovered || pressed) && styles.activeState
+                }
               >
-                San Jose Drive, Alaminos, Philippines, 2404
-              </Text>
+                {({ hovered, pressed }) => (
+                  <Text style={[styles.addressText, (hovered || pressed) && styles.hoverText]}>
+                    San Jose Drive, Alaminos, Philippines, 2404
+                  </Text>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>
@@ -138,6 +179,7 @@ const colors = {
   accent: themeColors.primarySoft,
   primary: themeColors.surface,
   footer: themeColors.footer,
+  hoverGold: "#f5c542",
 };
 
 const FOOTER_PADDING = 30;
@@ -226,6 +268,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.12)",
   },
+  iconBackgroundActive: {
+    backgroundColor: "rgba(255, 255, 255, 0.16)",
+    borderColor: "rgba(255, 255, 255, 0.32)",
+  },
   addressGroup: {
     gap: spacing.sm,
     alignItems: "center",
@@ -285,6 +331,12 @@ const styles = StyleSheet.create({
     color: colors.textOnPrimary,
     fontSize: typography.caption,
     letterSpacing: 0.2,
+  },
+  hoverText: {
+    color: colors.hoverGold,
+  },
+  activeState: {
+    opacity: 0.85,
   },
 });
 
