@@ -1,7 +1,8 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -15,7 +16,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -31,6 +31,21 @@ const ACCENT = colors.primary;
 export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const inputRef = useRef<TextInput>(null);
+
+  // Auto-focus the input when the modal opens
+  useEffect(() => {
+    if (visible) {
+      const timeoutId = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 150);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Optional: Clear the search query when the modal closes
+      setQuery("");
+    }
+  }, [visible]);
 
   const handleHomePress = () => {
     Keyboard.dismiss();
@@ -54,6 +69,11 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
     });
   };
 
+  const handleClear = () => {
+    setQuery("");
+    inputRef.current?.focus();
+  };
+
   return (
     <Modal
       visible={visible}
@@ -62,13 +82,17 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
       onRequestClose={onClose}
       transparent={false}
     >
-      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right", "bottom"]}>
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={["top", "left", "right", "bottom"]}
+      >
         <StatusBar style="light" translucent backgroundColor="transparent" />
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
+          {/* Header Bar */}
           <View style={styles.headerBar}>
             <Pressable
               accessibilityRole="button"
@@ -101,21 +125,42 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
 
           <View style={styles.headerAccent} />
 
+          {/* Search Content */}
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.searchBox}>
-              <TextInput
-                placeholder="type keyword(s) here"
-                placeholderTextColor="#8b8b93"
-                value={query}
-                onChangeText={setQuery}
-                style={styles.input}
-                returnKeyType="search"
-                onSubmitEditing={handleSearch}
-              />
+              {/* Input Wrapper for positioning the Clear Button */}
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  ref={inputRef}
+                  placeholder="type keyword(s) here"
+                  placeholderTextColor="#8b8b93"
+                  value={query}
+                  onChangeText={setQuery}
+                  style={styles.input}
+                  returnKeyType="search"
+                  onSubmitEditing={handleSearch}
+                />
+
+                {query.length > 0 && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear search"
+                    onPress={handleClear}
+                    style={styles.clearIcon}
+                  >
+                    <FontAwesome5
+                      name="times-circle"
+                      size={18}
+                      color="#8b8b93"
+                    />
+                  </Pressable>
+                )}
+              </View>
+
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Search"
@@ -126,7 +171,6 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                 <FontAwesome5 name="search" size={18} color="#fff" />
               </Pressable>
             </View>
-
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -207,6 +251,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.md + 4,
   },
+  inputWrapper: {
+    width: "100%",
+    position: "relative",
+    justifyContent: "center",
+  },
   input: {
     width: "100%",
     borderWidth: 1,
@@ -215,10 +264,16 @@ const styles = StyleSheet.create({
     color: "#f8f8fa",
     borderRadius: 12,
     paddingVertical: 16,
-    paddingHorizontal: 18,
+    paddingLeft: 18, // Added padding to center text visually considering the right icon
+    paddingRight: 40, // Make room for the clear button
     fontSize: typography.subtitle + 4,
     fontFamily: FontFamilies.body,
-    textAlign: "center",
+  },
+  clearIcon: {
+    position: "absolute",
+    right: 14,
+    padding: 6, // Larger touch target
+    zIndex: 10,
   },
   searchButton: {
     flexDirection: "row",
@@ -235,77 +290,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.4,
-  },
-  helperText: {
-    color: "#b4b6be",
-    textAlign: "center",
-    fontSize: typography.subtitle + 2,
-    fontFamily: FontFamilies.body,
-  },
-  emptyState: {
-    alignItems: "center",
-    gap: spacing.sm,
-    paddingVertical: 12,
-  },
-  emptyTitle: {
-    color: "#e1e1e6",
-    fontSize: typography.title,
-    fontWeight: "800",
-    fontFamily: FontFamilies.headingBold,
-  },
-  emptyBody: {
-    color: "#a9abb3",
-    fontSize: typography.subtitle + 1,
-    fontFamily: FontFamilies.body,
-    textAlign: "center",
-  },
-  results: {
-    gap: spacing.md,
-  },
-  resultCard: {
-    backgroundColor: "#1a1c22",
-    borderRadius: 12,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: "#22252d",
-    gap: spacing.sm,
-  },
-  resultBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: ACCENT,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  resultBadgeText: {
-    color: "#fff",
-    fontSize: typography.caption,
-    fontWeight: "700",
-    letterSpacing: 0.3,
-    textTransform: "uppercase",
-    fontFamily: FontFamilies.accentBold,
-  },
-  resultTitle: {
-    color: "#f7f7fa",
-    fontSize: typography.title,
-    fontWeight: "800",
-    fontFamily: FontFamilies.headingBold,
-    letterSpacing: 0.2,
-  },
-  resultSnippet: {
-    color: "#cfd1d8",
-    fontSize: typography.body,
-    lineHeight: typography.body + 6,
-    fontFamily: FontFamilies.body,
-  },
-  resultMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  resultDate: {
-    color: "#c7c7cf",
-    fontSize: typography.caption + 1,
-    fontFamily: FontFamilies.accent,
   },
 });
