@@ -534,7 +534,7 @@ const stylesFeature = StyleSheet.create({
   },
   moreStories: {
     marginTop: 2,
-    gap: 8,
+    gap: 18,
   },
   h4: {
     fontSize: 24,
@@ -544,7 +544,7 @@ const stylesFeature = StyleSheet.create({
   storyRow: {
     flexDirection: "column",
     alignItems: "stretch",
-    gap: 10,
+    gap: 2,
   },
   storyRowActive: {
     opacity: 0.92,
@@ -566,7 +566,7 @@ const stylesFeature = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.border,
     borderRadius: 4,
-    padding: 4,
+    padding: 2,
   },
   storyTitle: {
     alignSelf: "stretch",
