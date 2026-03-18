@@ -312,7 +312,10 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
+    <SafeAreaView
+      edges={["top", "bottom", "left", "right"]}
+      style={styles.container}
+    >
       <Header
         hideAnnouncementsIcon
         onSearchPress={() => setIsSearchOpen(true)}
