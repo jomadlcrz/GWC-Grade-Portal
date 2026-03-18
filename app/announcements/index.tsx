@@ -130,7 +130,10 @@ export default function AnnouncementsScreen() {
         <Footer bottomInset={insets.bottom} />
       </ScrollView>
 
-      <SearchOverlay visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchOverlay
+        visible={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
       <MenuOverlay visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </SafeAreaView>
   );
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   heroTitle: {
-    fontSize: typography.title + 10,
+    fontSize: 24,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,
