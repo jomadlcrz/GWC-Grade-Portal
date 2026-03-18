@@ -1,6 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { type Href, useRouter } from "expo-router";
 import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme, FontFamilies, palette } from "@/constants/theme";
@@ -13,8 +12,6 @@ type BulletItemProps = {
   label: string;
   onPress?: () => void;
 };
-
-const announcementsHref = "/announcements" as Href;
 
 function BulletItem({ label, onPress }: BulletItemProps) {
   return (
@@ -32,7 +29,6 @@ function BulletItem({ label, onPress }: BulletItemProps) {
 }
 
 export function Footer({ bottomInset = 0 }: FooterProps) {
-  const router = useRouter();
   const openLink = (url: string) => {
     Linking.openURL(url);
   };
@@ -51,10 +47,6 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Security &amp; Brand</Text>
           <View style={styles.list}>
-            <BulletItem
-              label="Announcements"
-              onPress={() => router.push(announcementsHref)}
-            />
             <BulletItem label="Data Privacy Notice" />
             <BulletItem label="Security Issue" />
             <BulletItem label="Copyright Infringement" />
@@ -159,6 +151,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.xl + spacing.sm,
+    width: "100%",
+    maxWidth: 1080,
+    alignSelf: "center",
+    alignItems: "center",
   },
   logoWrapper: {
     alignItems: "center",
@@ -170,6 +166,7 @@ const styles = StyleSheet.create({
   section: {
     gap: spacing.sm,
     paddingVertical: spacing.xs,
+    alignItems: "center",
   },
   sectionTitle: {
     fontSize: typography.subtitle + 2,
@@ -178,10 +175,12 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: colors.textOnPrimary,
     letterSpacing: 0.6,
+    textAlign: "center",
   },
   list: {
     gap: spacing.sm,
-    paddingLeft: spacing.sm,
+    paddingLeft: 0,
+    alignItems: "center",
   },
   bulletItem: {
     flexDirection: "row",
@@ -192,14 +191,17 @@ const styles = StyleSheet.create({
     color: colors.textOnPrimary,
     fontSize: typography.body,
     lineHeight: typography.body + 6,
+    textAlign: "center",
   },
   contactGroup: {
     gap: spacing.sm,
+    alignItems: "center",
   },
   linkText: {
     color: colors.textOnPrimary,
     fontSize: typography.body,
     lineHeight: typography.body + 6,
+    textAlign: "center",
   },
   socialRow: {
     flexDirection: "row",
@@ -219,20 +221,23 @@ const styles = StyleSheet.create({
   },
   addressGroup: {
     gap: spacing.sm,
+    alignItems: "center",
+    maxWidth: 360,
   },
   addressLine: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: spacing.sm,
   },
   addressIcon: {
     marginTop: 2,
   },
   addressText: {
-    flex: 1,
     color: colors.textOnPrimary,
     fontSize: typography.body,
     lineHeight: typography.body + 6,
+    textAlign: "left",
+    flexShrink: 1,
   },
   bottomBar: {
     backgroundColor: colors.footer,
