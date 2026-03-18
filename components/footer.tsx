@@ -141,6 +141,7 @@ const colors = {
 };
 
 const FOOTER_PADDING = 30;
+const CONTENT_PADDING = 30;
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -150,8 +151,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   content: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: CONTENT_PADDING,
+    paddingBottom: CONTENT_PADDING,
     gap: spacing.xl + spacing.sm,
     width: "100%",
     maxWidth: 1080,
