@@ -13,6 +13,9 @@ import {
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
+// Destructured at the top so it's available for the render cycle
+const { colors, spacing, radius, typography } = AppTheme;
+
 type HeaderProps = {
   title?: string;
   subtitle?: string;
@@ -35,10 +38,13 @@ export function Header({
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
   const router = useRouter();
   const pathname = usePathname();
+
   const isOnAnnouncements =
     pathname === "/announcements" ||
     pathname === "/announcement" ||
     pathname?.startsWith("/announcements/");
+
+  const showAnnouncements = !hideAnnouncementsIcon && !isOnAnnouncements;
 
   useEffect(() => {
     Animated.timing(bgAnim, {
@@ -61,11 +67,12 @@ export function Header({
         },
       ]}
     >
+      {/* Left side takes remaining space to push actions to the right */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Go to home"
         onPress={() => router.push("/")}
-        style={styles.leftGroup}
+        style={[styles.leftGroup, { flex: 1 }]}
       >
         <View style={styles.logoWrapper}>
           <Image
@@ -81,25 +88,36 @@ export function Header({
           >
             {title}
           </Text>
-          <Text
-            style={[styles.subtitle, mode === "overlay" && styles.overlayText]}
-          >
-            {subtitle}
-          </Text>
+          {!!subtitle && (
+            <Text
+              style={[
+                styles.subtitle,
+                mode === "overlay" && styles.overlayText,
+              ]}
+            >
+              {subtitle}
+            </Text>
+          )}
         </View>
       </Pressable>
 
+      {/* Right side actions */}
       <View style={styles.actions}>
-        {!hideAnnouncementsIcon && !isOnAnnouncements && (
+        {showAnnouncements && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Go to announcements"
             onPress={() => router.push(announcementsHref)}
-            style={styles.iconButton}
+            // @ts-ignore - hovered is supported in Expo Web natively
+            style={({ pressed, hovered }) => [
+              styles.iconButton,
+              (pressed || hovered) && styles.iconHover,
+            ]}
           >
-            <FontAwesome5 name="bullhorn" size={26} color={colors.surface} />
+            <FontAwesome5 name="bullhorn" size={24} color={colors.surface} />
           </Pressable>
         )}
+
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Open search"
@@ -110,33 +128,41 @@ export function Header({
             }
             router.push("/search");
           }}
-          style={styles.iconButton}
+          // @ts-ignore
+          style={({ pressed, hovered }) => [
+            styles.iconButton,
+            showAnnouncements && styles.separator, // Only add left border if Bullhorn is present
+            (pressed || hovered) && styles.iconHover,
+          ]}
         >
-          <FontAwesome5 name="search" size={26} color={colors.surface} />
+          <FontAwesome5 name="search" size={24} color={colors.surface} />
         </Pressable>
+
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Open menu"
           onPress={onMenuPress}
-          style={styles.iconButton}
+          // @ts-ignore
+          style={({ pressed, hovered }) => [
+            styles.iconButton,
+            styles.separator, // Always add separator since Search is guaranteed to be before it
+            (pressed || hovered) && styles.iconHover,
+          ]}
         >
-          <FontAwesome5 name="bars" size={28} color={colors.surface} />
+          <FontAwesome5 name="bars" size={26} color={colors.surface} />
         </Pressable>
       </View>
     </Animated.View>
   );
 }
 
-const { colors, spacing, radius, typography } = AppTheme;
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "stretch",
+    alignItems: "stretch", // Ensures children match header height
     justifyContent: "space-between",
     paddingHorizontal: 0,
     paddingVertical: 0,
-    gap: spacing.sm,
     backgroundColor: colors.surface,
   },
   leftGroup: {
@@ -144,16 +170,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
     paddingLeft: spacing.md,
-    paddingVertical: spacing.md + spacing.xs,
+    paddingVertical: spacing.md,
   },
   logoWrapper: {
     width: 70,
     height: 70,
     borderRadius: radius.pill,
     backgroundColor: colors.surface,
-    borderWidth: 0,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 66,
@@ -185,17 +210,21 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.md,
+    alignItems: "stretch", // Forces inner Pressables to be 100% height
     backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md + spacing.sm,
     paddingVertical: 0,
-    alignSelf: "stretch",
-    borderRadius: 0,
+    paddingHorizontal: 0, // Removed horizontal padding from container
   },
   iconButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 22, // Acts as the click-target width
+  },
+  iconHover: {
+    backgroundColor: "rgba(255, 255, 255, 0.15)", // Subtle overlay for hover/press states
+  },
+  separator: {
+    borderLeftWidth: 1,
+    borderLeftColor: "rgba(255, 255, 255, 0.3)", // The thin white line from your screenshot
   },
 });
