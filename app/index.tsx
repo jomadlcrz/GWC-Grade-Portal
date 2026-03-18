@@ -573,11 +573,8 @@ const stylesFeature = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
     fontFamily: FontFamilies.accent,
-    color: "#d4a017", // deeper gold for better contrast
+    color: "#9c4f00", // richer gold with stronger contrast
     textAlign: "left",
-    textShadowColor: "rgba(0,0,0,0.25)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
   },
   storyTitleActive: {
     color: colors.textPrimary,
