@@ -19,6 +19,7 @@ type HeaderProps = {
   mode?: "overlay" | "sticky";
   onSearchPress?: () => void;
   hideAnnouncementsIcon?: boolean;
+  onMenuPress?: () => void;
 };
 
 const announcementsHref = "/announcements" as Href;
@@ -29,6 +30,7 @@ export function Header({
   mode = "sticky",
   onSearchPress,
   hideAnnouncementsIcon = false,
+  onMenuPress,
 }: HeaderProps) {
   const bgAnim = useRef(new Animated.Value(mode === "overlay" ? 0 : 1)).current;
   const router = useRouter();
@@ -112,7 +114,14 @@ export function Header({
         >
           <FontAwesome5 name="search" size={26} color={colors.surface} />
         </Pressable>
-        <FontAwesome5 name="bars" size={28} color={colors.surface} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open menu"
+          onPress={onMenuPress}
+          style={styles.iconButton}
+        >
+          <FontAwesome5 name="bars" size={28} color={colors.surface} />
+        </Pressable>
       </View>
     </Animated.View>
   );

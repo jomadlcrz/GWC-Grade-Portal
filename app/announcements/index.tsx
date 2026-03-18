@@ -9,6 +9,7 @@ import {
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -26,6 +27,7 @@ const { colors, spacing, typography } = AppTheme;
 export default function AnnouncementsScreen() {
   const insets = useSafeAreaInsets();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const announcements = useMemo<Announcement[]>(
     () => [
@@ -63,7 +65,10 @@ export default function AnnouncementsScreen() {
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
       {/* Keep the global header branding; do not rename */}
-      <Header onSearchPress={() => setIsSearchOpen(true)} />
+      <Header
+        onSearchPress={() => setIsSearchOpen(true)}
+        onMenuPress={() => setIsMenuOpen(true)}
+      />
 
       <ScrollView
         contentContainerStyle={[
@@ -126,6 +131,7 @@ export default function AnnouncementsScreen() {
       </ScrollView>
 
       <SearchOverlay visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <MenuOverlay visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </SafeAreaView>
   );
 }

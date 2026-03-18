@@ -19,6 +19,7 @@ import {
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -262,6 +263,7 @@ export default function SearchScreen() {
   const { width } = useWindowDimensions();
   const params = useLocalSearchParams<{ query?: string | string[] }>();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchedQuery, setSearchedQuery] = useState("");
 
@@ -319,6 +321,7 @@ export default function SearchScreen() {
       <Header
         hideAnnouncementsIcon
         onSearchPress={() => setIsSearchOpen(true)}
+        onMenuPress={() => setIsMenuOpen(true)}
       />
 
       <ScrollView
@@ -355,6 +358,7 @@ export default function SearchScreen() {
         visible={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
+      <MenuOverlay visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </SafeAreaView>
   );
 }

@@ -8,6 +8,7 @@ import {
 
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -84,6 +85,7 @@ export default function HomeScreen() {
   const heroHeight = HERO_HEIGHT;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleScroll = (offsetY: number) => {
     const shouldUseStickyStyle =
@@ -126,10 +128,12 @@ export default function HomeScreen() {
         <Header
           mode={isScrolled ? "sticky" : "overlay"}
           onSearchPress={() => setIsSearchOpen(true)}
+          onMenuPress={() => setIsMenuOpen(true)}
         />
       </View>
 
       <SearchOverlay visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <MenuOverlay visible={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </SafeAreaView>
   );
 }
