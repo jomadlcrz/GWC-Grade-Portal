@@ -147,12 +147,13 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: colors.background,
     width: "100%",
-    paddingTop: spacing.xl + spacing.sm,
+    paddingTop: 0,
     paddingBottom: 0,
   },
   content: {
     paddingHorizontal: CONTENT_PADDING,
     paddingBottom: CONTENT_PADDING,
+    paddingTop: CONTENT_PADDING,
     gap: spacing.xl + spacing.sm,
     width: "100%",
     maxWidth: 1080,
@@ -161,10 +162,11 @@ const styles = StyleSheet.create({
   },
   logoWrapper: {
     alignItems: "center",
+    marginBottom: spacing.md,
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 300,
+    height: 300,
   },
   section: {
     gap: spacing.sm,
