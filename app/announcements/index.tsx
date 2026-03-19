@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.headingBold,
   },
   sectionHeading: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: 40,
     paddingTop: spacing.md,
   },
   sectionHeadingText: {
