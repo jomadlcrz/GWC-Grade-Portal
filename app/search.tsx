@@ -247,14 +247,33 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
                 <Text style={styles.resultSummary}>{result.summary}</Text>
 
                 <View style={styles.resultFooter}>
-                  <View style={styles.resultReadMoreRow}>
-                    <Text style={styles.resultReadMoreText}>Read More</Text>
-                    <FontAwesome5
-                      name="arrow-right"
-                      size={14}
-                      color={colors.primary}
-                    />
-                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    // @ts-ignore hovered is web-only; pressed covers mobile
+                    style={styles.resultReadMoreRow}
+                  >
+                    {({ hovered, pressed }) => (
+                      <>
+                        <Text
+                          style={[
+                            styles.resultReadMoreText,
+                            (hovered || pressed) && styles.resultReadMoreTextActive,
+                          ]}
+                        >
+                          Read More
+                        </Text>
+                        <FontAwesome5
+                          name="arrow-right"
+                          size={14}
+                          color={hovered || pressed ? colors.textPrimary : colors.primary}
+                          style={[
+                            styles.resultReadMoreIcon,
+                            (hovered || pressed) && styles.resultReadMoreIconActive,
+                          ]}
+                        />
+                      </>
+                    )}
+                  </Pressable>
                 </View>
               </View>
             ))}
@@ -510,5 +529,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,
+  },
+  resultReadMoreTextActive: {
+    color: colors.textPrimary,
+  },
+  resultReadMoreIcon: {
+    transform: [{ translateX: 0 }],
+  },
+  resultReadMoreIconActive: {
+    transform: [{ translateX: 4 }],
   },
 });
