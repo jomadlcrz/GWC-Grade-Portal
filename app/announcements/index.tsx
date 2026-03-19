@@ -1,7 +1,7 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -121,14 +121,33 @@ export default function AnnouncementsScreen() {
               <Text style={styles.body}>{item.body}</Text>
 
               <View style={styles.cardFooter}>
-                <View style={styles.readMoreRow}>
-                  <Text style={styles.readMoreText}>Read More</Text>
-                  <FontAwesome5
-                    name="arrow-right"
-                    size={14}
-                    color={colors.primary}
-                  />
-                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  // @ts-ignore hovered is web-only; pressed covers mobile
+                  style={styles.readMoreRow}
+                >
+                  {({ hovered, pressed }) => (
+                    <>
+                      <Text
+                        style={[
+                          styles.readMoreText,
+                          (hovered || pressed) && styles.readMoreTextActive,
+                        ]}
+                      >
+                        Read More
+                      </Text>
+                      <FontAwesome5
+                        name="arrow-right"
+                        size={14}
+                        color={hovered || pressed ? colors.textPrimary : colors.primary}
+                        style={[
+                          styles.readMoreIcon,
+                          (hovered || pressed) && styles.readMoreIconActive,
+                        ]}
+                      />
+                    </>
+                  )}
+                </Pressable>
               </View>
             </View>
           ))}
@@ -259,10 +278,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+    alignSelf: "flex-end",
   },
   readMoreText: {
     fontSize: 16,
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,
+  },
+  readMoreTextActive: {
+    color: colors.textPrimary,
+  },
+  readMoreIcon: {
+    transform: [{ translateX: 0 }],
+  },
+  readMoreIconActive: {
+    transform: [{ translateX: 4 }],
   },
 });

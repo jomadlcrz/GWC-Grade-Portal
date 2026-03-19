@@ -231,14 +231,36 @@ function SectionCard({
         <View style={stylesFeature.featureBody}>
           <Text style={stylesFeature.h2}>{headline ?? title}</Text>
           <Text style={stylesFeature.paragraph}>{subtitle}</Text>
-          <View style={stylesFeature.readMore}>
-            <Text style={stylesFeature.readMoreText}>Read More</Text>
-            <FontAwesome5
-              name="arrow-right"
-              size={14}
-              color={colors.surface}
-            />
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            // @ts-ignore hovered is web-only; pressed covers mobile
+            style={({ hovered, pressed }) => [
+              stylesFeature.readMore,
+              (hovered || pressed) && stylesFeature.readMoreActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
+                <>
+                  <Text
+                    style={[
+                      stylesFeature.readMoreText,
+                      (hovered || pressed) && stylesFeature.readMoreTextActive,
+                    ]}
+                  >
+                    Read More
+                  </Text>
+                  <FontAwesome5
+                    name="arrow-right"
+                    size={14}
+                    color={colors.surface}
+                    style={[
+                      stylesFeature.readMoreIcon,
+                      (hovered || pressed) && stylesFeature.readMoreIconActive,
+                    ]}
+                  />
+                </>
+              )}
+            </Pressable>
 
           <View style={stylesFeature.moreStories}>
             <Text style={stylesFeature.h4}>More Stories:</Text>
@@ -326,14 +348,36 @@ function SectionCard({
             to meet the zero-waste plastic management under the “PLASTIC FREE
             ADVOCACY” to be specific in the College.
           </Text>
-          <View style={stylesPerspective.readMore}>
-            <Text style={stylesPerspective.readMoreText}>Read More</Text>
-            <FontAwesome5
-              name="arrow-right"
-              size={14}
-              color={colors.primary}
-            />
-          </View>
+          <Pressable
+            accessibilityRole="button"
+            // @ts-ignore hovered is web-only; pressed covers mobile
+            style={({ hovered, pressed }) => [
+              stylesPerspective.readMore,
+              (hovered || pressed) && stylesPerspective.readMoreActive,
+            ]}
+          >
+            {({ hovered, pressed }) => (
+              <>
+                <Text
+                  style={[
+                    stylesPerspective.readMoreText,
+                    (hovered || pressed) && stylesPerspective.readMoreTextActive,
+                  ]}
+                >
+                  Read More
+                </Text>
+                <FontAwesome5
+                  name="arrow-right"
+                  size={14}
+                  color={hovered || pressed ? colors.textPrimary : colors.surface}
+                  style={[
+                    stylesPerspective.readMoreIcon,
+                    (hovered || pressed) && stylesPerspective.readMoreIconActive,
+                  ]}
+                />
+                </>
+              )}
+            </Pressable>
         </View>
       </View>
     );
@@ -544,6 +588,10 @@ const stylesFeature = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
+  readMoreActive: {
+    backgroundColor: colors.textPrimary,
+    shadowOpacity: 0.28,
+  },
   readMoreText: {
     fontSize: 16,
     fontWeight: "800",
@@ -551,6 +599,15 @@ const stylesFeature = StyleSheet.create({
     color: colors.surface,
     textTransform: "uppercase",
     letterSpacing: 0.5,
+  },
+  readMoreTextActive: {
+    color: colors.surface,
+  },
+  readMoreIcon: {
+    transform: [{ translateX: 0 }],
+  },
+  readMoreIconActive: {
+    transform: [{ translateX: 4 }],
   },
   moreStories: {
     marginTop: 2,
@@ -733,7 +790,7 @@ const stylesPerspective = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: colors.surface,
+    backgroundColor: "#000",
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 0,
@@ -743,12 +800,25 @@ const stylesPerspective = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+  readMoreActive: {
+    backgroundColor: colors.surface,
+    shadowOpacity: 0.25,
+  },
   readMoreText: {
     fontSize: 16,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
-    color: colors.primary,
+    color: colors.surface,
     textTransform: "uppercase",
     letterSpacing: 0.5,
+  },
+  readMoreTextActive: {
+    color: colors.textPrimary,
+  },
+  readMoreIcon: {
+    transform: [{ translateX: 0 }],
+  },
+  readMoreIconActive: {
+    transform: [{ translateX: 4 }],
   },
 });
