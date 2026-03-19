@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT,
     paddingHorizontal: 36,
     paddingVertical: 16,
-    borderRadius: 10,
   },
   searchButtonText: {
     color: "#fff",
