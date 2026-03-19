@@ -140,10 +140,28 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                 accessibilityRole="button"
                 accessibilityLabel="Search"
                 onPress={handleSearch}
-                style={styles.searchButton}
+                // @ts-ignore hovered is supported in Expo web; pressed covers native
+                style={({ pressed, hovered }) => [
+                  styles.searchButton,
+                  (pressed || hovered) && styles.searchButtonActive,
+                ]}
               >
-                <Text style={styles.searchButtonText}>Search</Text>
-                <FontAwesome5 name="search" size={18} color="#fff" />
+                {
+                  // @ts-ignore hovered is available on web
+                  ({ pressed, hovered }) => (
+                  <>
+                    <Text style={styles.searchButtonText}>Search</Text>
+                    <FontAwesome5
+                      name="search"
+                      size={18}
+                      color="#fff"
+                      style={[
+                        styles.searchIcon,
+                        (pressed || hovered) && styles.searchIconActive,
+                      ]}
+                    />
+                  </>
+                )}
               </Pressable>
             </View>
           </ScrollView>
@@ -203,6 +221,21 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT,
     paddingHorizontal: 36,
     paddingVertical: 16,
+    // High-contrast dark-blue glow (base)
+    shadowColor: "#0c1f58",
+    shadowOpacity: 0.48,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 18,
+  },
+  searchButtonActive: {
+    backgroundColor: "#000",
+    // Deeper blue glow on hover/press
+    shadowColor: "#1f4baa",
+    shadowOpacity: 0.75,
+    shadowRadius: 30,
+    shadowOffset: { width: 0, height: 14 },
+    elevation: 28,
   },
   searchButtonText: {
     color: "#fff",
@@ -210,5 +243,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.4,
+  },
+  searchIcon: {
+    transform: [{ translateX: 0 }],
+  },
+  searchIconActive: {
+    transform: [{ translateX: 4 }],
   },
 });
