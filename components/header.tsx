@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22, // Acts as the click-target width
   },
   iconHover: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)", // Subtle overlay for hover/press states
+    backgroundColor: "#000",
   },
   separator: {
     borderLeftWidth: 1,
