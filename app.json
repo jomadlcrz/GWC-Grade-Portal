@@ -7,6 +7,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "gwc-grade-portal",
     "userInterfaceStyle": "light",
+
+    "updates": {
+      "assetPatternsToBeBundled": ["assets/images/.*", "assets/fonts/.*"]
+    },
+
     "ios": {
       "supportsTablet": true
     },

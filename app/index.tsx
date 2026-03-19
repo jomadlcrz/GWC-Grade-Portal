@@ -1,5 +1,5 @@
-import { Image } from "expo-image";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
@@ -110,7 +110,7 @@ export default function HomeScreen() {
       >
         <View style={[styles.heroSection, { height: heroHeight }]}>
           <Image
-            source={require("@/storage/cover_image/cover_sample.jpg")}
+            source={require("@/assets/images/cover.jpg")}
             style={styles.heroImage}
             contentFit="cover"
           />
@@ -237,30 +237,30 @@ function SectionCard({
             style={({ hovered, pressed }) => [
               stylesFeature.readMore,
               (hovered || pressed) && stylesFeature.readMoreActive,
-              ]}
-            >
-              {({ hovered, pressed }) => (
-                <>
-                  <Text
-                    style={[
-                      stylesFeature.readMoreText,
-                      (hovered || pressed) && stylesFeature.readMoreTextActive,
-                    ]}
-                  >
-                    Read More
-                  </Text>
-                  <FontAwesome5
-                    name="arrow-right"
-                    size={14}
-                    color={colors.surface}
-                    style={[
-                      stylesFeature.readMoreIcon,
-                      (hovered || pressed) && stylesFeature.readMoreIconActive,
-                    ]}
-                  />
-                </>
-              )}
-            </Pressable>
+            ]}
+          >
+            {({ hovered, pressed }) => (
+              <>
+                <Text
+                  style={[
+                    stylesFeature.readMoreText,
+                    (hovered || pressed) && stylesFeature.readMoreTextActive,
+                  ]}
+                >
+                  Read More
+                </Text>
+                <FontAwesome5
+                  name="arrow-right"
+                  size={14}
+                  color={colors.surface}
+                  style={[
+                    stylesFeature.readMoreIcon,
+                    (hovered || pressed) && stylesFeature.readMoreIconActive,
+                  ]}
+                />
+              </>
+            )}
+          </Pressable>
 
           <View style={stylesFeature.moreStories}>
             <Text style={stylesFeature.h4}>More Stories:</Text>
@@ -361,7 +361,8 @@ function SectionCard({
                 <Text
                   style={[
                     stylesPerspective.readMoreText,
-                    (hovered || pressed) && stylesPerspective.readMoreTextActive,
+                    (hovered || pressed) &&
+                      stylesPerspective.readMoreTextActive,
                   ]}
                 >
                   Read More
@@ -369,15 +370,18 @@ function SectionCard({
                 <FontAwesome5
                   name="arrow-right"
                   size={14}
-                  color={hovered || pressed ? colors.textPrimary : colors.surface}
+                  color={
+                    hovered || pressed ? colors.textPrimary : colors.surface
+                  }
                   style={[
                     stylesPerspective.readMoreIcon,
-                    (hovered || pressed) && stylesPerspective.readMoreIconActive,
+                    (hovered || pressed) &&
+                      stylesPerspective.readMoreIconActive,
                   ]}
                 />
-                </>
-              )}
-            </Pressable>
+              </>
+            )}
+          </Pressable>
         </View>
       </View>
     );

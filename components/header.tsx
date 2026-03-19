@@ -78,7 +78,6 @@ export function Header({
           <Image
             source={require("@/assets/images/gwc-logo-new.png")}
             style={styles.logo}
-            cachePolicy="memory-disk" // keep logo in cache to prevent reloading flicker
             contentFit="contain"
           />
         </View>

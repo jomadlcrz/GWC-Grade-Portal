@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image, type ImageSource } from "expo-image";
-import { StyleSheet, Text, Pressable, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -42,7 +42,6 @@ export function OverlayHeader({
             <Image
               source={logoSource}
               style={styles.logo}
-              cachePolicy="memory-disk"
               contentFit="contain"
             />
           </View>
@@ -70,7 +69,9 @@ export function OverlayHeader({
         )}
       </View>
 
-      {showAccent && <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />}
+      {showAccent && (
+        <View style={[styles.headerAccent, { backgroundColor: accentColor }]} />
+      )}
     </View>
   );
 }
