@@ -247,7 +247,14 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
                 <Text style={styles.resultSummary}>{result.summary}</Text>
 
                 <View style={styles.resultFooter}>
-                  <Text style={styles.resultReadMore}>Read More</Text>
+                  <View style={styles.resultReadMoreRow}>
+                    <Text style={styles.resultReadMoreText}>Read More</Text>
+                    <FontAwesome5
+                      name="arrow-right"
+                      size={14}
+                      color={colors.primary}
+                    />
+                  </View>
                 </View>
               </View>
             ))}
@@ -494,7 +501,12 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     alignItems: "flex-end",
   },
-  resultReadMore: {
+  resultReadMoreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  resultReadMoreText: {
     fontSize: 16,
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,

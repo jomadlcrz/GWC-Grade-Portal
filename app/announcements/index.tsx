@@ -121,7 +121,14 @@ export default function AnnouncementsScreen() {
               <Text style={styles.body}>{item.body}</Text>
 
               <View style={styles.cardFooter}>
-                <Text style={styles.readMore}>Read More →</Text>
+                <View style={styles.readMoreRow}>
+                  <Text style={styles.readMoreText}>Read More</Text>
+                  <FontAwesome5
+                    name="arrow-right"
+                    size={14}
+                    color={colors.primary}
+                  />
+                </View>
               </View>
             </View>
           ))}
@@ -248,7 +255,12 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     alignItems: "flex-end",
   },
-  readMore: {
+  readMoreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  readMoreText: {
     fontSize: 16,
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,

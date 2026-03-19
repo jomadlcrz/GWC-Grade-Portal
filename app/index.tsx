@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
@@ -230,7 +231,14 @@ function SectionCard({
         <View style={stylesFeature.featureBody}>
           <Text style={stylesFeature.h2}>{headline ?? title}</Text>
           <Text style={stylesFeature.paragraph}>{subtitle}</Text>
-          <Text style={stylesFeature.readMore}>Read More →</Text>
+          <View style={stylesFeature.readMore}>
+            <Text style={stylesFeature.readMoreText}>Read More</Text>
+            <FontAwesome5
+              name="arrow-right"
+              size={14}
+              color={colors.surface}
+            />
+          </View>
 
           <View style={stylesFeature.moreStories}>
             <Text style={stylesFeature.h4}>More Stories:</Text>
@@ -318,7 +326,14 @@ function SectionCard({
             to meet the zero-waste plastic management under the “PLASTIC FREE
             ADVOCACY” to be specific in the College.
           </Text>
-          <Text style={stylesPerspective.readMore}>Read More →</Text>
+          <View style={stylesPerspective.readMore}>
+            <Text style={stylesPerspective.readMoreText}>Read More</Text>
+            <FontAwesome5
+              name="arrow-right"
+              size={14}
+              color={colors.primary}
+            />
+          </View>
         </View>
       </View>
     );
@@ -516,21 +531,26 @@ const stylesFeature = StyleSheet.create({
   },
   readMore: {
     alignSelf: "flex-end",
-    fontSize: 16,
-    fontWeight: "800",
-    fontFamily: FontFamilies.headingBold,
-    color: colors.surface,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
     backgroundColor: colors.primary,
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 0,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
+  },
+  readMoreText: {
+    fontSize: 16,
+    fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
+    color: colors.surface,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   moreStories: {
     marginTop: 2,
@@ -710,20 +730,25 @@ const stylesPerspective = StyleSheet.create({
   },
   readMore: {
     alignSelf: "flex-end",
-    fontSize: 16,
-    fontWeight: "800",
-    fontFamily: FontFamilies.headingBold,
-    color: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
     backgroundColor: colors.surface,
     paddingHorizontal: 36,
     paddingVertical: 16,
     borderRadius: 0,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowRadius: 3,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+  },
+  readMoreText: {
+    fontSize: 16,
+    fontWeight: "800",
+    fontFamily: FontFamilies.headingBold,
+    color: colors.primary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });
