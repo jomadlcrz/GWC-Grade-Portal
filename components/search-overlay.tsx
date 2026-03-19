@@ -1,6 +1,5 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
@@ -86,7 +85,6 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
         style={styles.safeArea}
         edges={["top", "left", "right", "bottom"]}
       >
-        <StatusBar style="light" translucent backgroundColor="transparent" />
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === "ios" ? "padding" : undefined}

@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useMemo } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -49,8 +48,6 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
         style={styles.safeArea}
         edges={["top", "left", "right", "bottom"]}
       >
-        <StatusBar style="light" translucent backgroundColor="transparent" />
-
         <OverlayHeader
           logoSource={require("@/assets/images/gwc-logo-new-white.png")}
           title="GWC"
