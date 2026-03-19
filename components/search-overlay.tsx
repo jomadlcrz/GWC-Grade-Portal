@@ -1,5 +1,4 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
+import { OverlayHeader } from "./overlay-header";
 
 type SearchOverlayProps = {
   visible: boolean;
@@ -92,39 +92,15 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
-          {/* Header Bar */}
-          <View style={styles.headerBar}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Go to home"
-              onPress={handleHomePress}
-              style={styles.logoRow}
-            >
-              <View style={styles.logoWrapper}>
-                <Image
-                  source={require("@/assets/images/gwc-logo-new-white.png")}
-                  style={styles.logo}
-                  cachePolicy="memory-disk"
-                  contentFit="contain"
-                />
-              </View>
-              <View style={styles.textGroup}>
-                <Text style={styles.headerTitle}>GWC</Text>
-                <Text style={styles.headerSubtitle}>Grade Portal</Text>
-              </View>
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close search"
-              onPress={onClose}
-              style={styles.closeButton}
-            >
-              <FontAwesome5 name="times-circle" size={28} color="#e6e6e6" />
-            </Pressable>
-          </View>
-
-          <View style={styles.headerAccent} />
+          <OverlayHeader
+            logoSource={require("@/assets/images/gwc-logo-new-white.png")}
+            title="GWC"
+            subtitle="Grade Portal"
+            onHomePress={handleHomePress}
+            onClose={onClose}
+            closeLabel="Close search"
+            accentColor={ACCENT}
+          />
 
           {/* Search Content */}
           <ScrollView
@@ -187,63 +163,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: DARK_BG,
-  },
-  headerBar: {
-    flexDirection: "row",
-    alignItems: "stretch",
-    justifyContent: "space-between",
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-  },
-  logoRow: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    paddingLeft: spacing.md,
-    paddingVertical: spacing.md,
-  },
-  logoWrapper: {
-    width: 70,
-    height: 70,
-    borderRadius: 999,
-    backgroundColor: "transparent",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logo: {
-    width: 66,
-    height: 66,
-  },
-  textGroup: {
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: typography.title + 4,
-    fontWeight: "800",
-    fontFamily: FontFamilies.heading,
-    color: "#f5f5f5",
-    letterSpacing: 0.2,
-    lineHeight: typography.title + 8,
-    textAlign: "center",
-  },
-  headerSubtitle: {
-    marginTop: spacing.xs / 4,
-    fontSize: typography.subtitle + 1,
-    fontFamily: FontFamilies.accent,
-    color: "#e0e6f4",
-    letterSpacing: 0.4,
-    lineHeight: typography.subtitle + 3,
-    textAlign: "center",
-  },
-  closeButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 22,
-  },
-  headerAccent: {
-    height: 3,
-    backgroundColor: ACCENT,
   },
   content: {
     paddingHorizontal: spacing.lg + 8,
