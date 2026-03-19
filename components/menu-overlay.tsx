@@ -123,18 +123,18 @@ const styles = StyleSheet.create({
   },
   headerBar: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "stretch",
     justifyContent: "space-between",
     paddingHorizontal: 0,
-    paddingVertical: spacing.md + spacing.xs,
-    minHeight: 98,
-    paddingRight: spacing.md + spacing.sm,
+    paddingVertical: 0,
   },
   logoRow: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
     paddingLeft: spacing.md,
+    paddingVertical: spacing.md,
   },
   logoWrapper: {
     width: 70,
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     color: "#f5f5f5",
     letterSpacing: 0.2,
     lineHeight: typography.title + 8,
+    textAlign: "center",
   },
   headerSubtitle: {
     marginTop: spacing.xs / 4,
@@ -166,10 +167,12 @@ const styles = StyleSheet.create({
     color: "#e0e6f4",
     letterSpacing: 0.4,
     lineHeight: typography.subtitle + 3,
+    textAlign: "center",
   },
   closeButton: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xs,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 22,
   },
   headerAccent: {
     height: 3,
