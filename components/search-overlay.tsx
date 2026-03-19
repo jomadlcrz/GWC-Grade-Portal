@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
+import { AnimatedIconShift } from "./animated-icon-shift";
 import { OverlayHeader } from "./overlay-header";
 import { OverlayShell } from "./overlay-shell";
 
@@ -141,15 +142,12 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                 ({ pressed, hovered }) => (
                   <>
                     <Text style={styles.searchButtonText}>Search</Text>
-                    <FontAwesome5
-                      name="search"
-                      size={18}
-                      color="#fff"
-                      style={[
-                        styles.searchIcon,
-                        (pressed || hovered) && styles.searchIconActive,
-                      ]}
-                    />
+                    <AnimatedIconShift
+                      active={pressed || hovered}
+                      style={styles.searchIcon}
+                    >
+                      <FontAwesome5 name="search" size={18} color="#fff" />
+                    </AnimatedIconShift>
                   </>
                 )}
             </Pressable>
@@ -233,9 +231,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   searchIcon: {
-    transform: [{ translateX: 0 }],
-  },
-  searchIconActive: {
-    transform: [{ translateX: 4 }],
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors } = AppTheme;
@@ -249,15 +250,16 @@ function SectionCard({
                 >
                   Read More
                 </Text>
-                <FontAwesome5
-                  name="arrow-right"
-                  size={14}
-                  color={colors.surface}
-                  style={[
-                    stylesFeature.readMoreIcon,
-                    (hovered || pressed) && stylesFeature.readMoreIconActive,
-                  ]}
-                />
+                <AnimatedIconShift
+                  active={hovered || pressed}
+                  style={stylesFeature.readMoreIcon}
+                >
+                  <FontAwesome5
+                    name="arrow-right"
+                    size={14}
+                    color={colors.surface}
+                  />
+                </AnimatedIconShift>
               </>
             )}
           </Pressable>
@@ -367,18 +369,18 @@ function SectionCard({
                 >
                   Read More
                 </Text>
-                <FontAwesome5
-                  name="arrow-right"
-                  size={14}
-                  color={
-                    hovered || pressed ? colors.textPrimary : colors.surface
-                  }
-                  style={[
-                    stylesPerspective.readMoreIcon,
-                    (hovered || pressed) &&
-                      stylesPerspective.readMoreIconActive,
-                  ]}
-                />
+                <AnimatedIconShift
+                  active={hovered || pressed}
+                  style={stylesPerspective.readMoreIcon}
+                >
+                  <FontAwesome5
+                    name="arrow-right"
+                    size={14}
+                    color={
+                      hovered || pressed ? colors.textPrimary : colors.surface
+                    }
+                  />
+                </AnimatedIconShift>
               </>
             )}
           </Pressable>
@@ -608,10 +610,8 @@ const stylesFeature = StyleSheet.create({
     color: colors.surface,
   },
   readMoreIcon: {
-    transform: [{ translateX: 0 }],
-  },
-  readMoreIconActive: {
-    transform: [{ translateX: 4 }],
+    justifyContent: "center",
+    alignItems: "center",
   },
   moreStories: {
     marginTop: 2,
@@ -820,9 +820,7 @@ const stylesPerspective = StyleSheet.create({
     color: colors.textPrimary,
   },
   readMoreIcon: {
-    transform: [{ translateX: 0 }],
-  },
-  readMoreIconActive: {
-    transform: [{ translateX: 4 }],
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

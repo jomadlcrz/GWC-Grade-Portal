@@ -21,6 +21,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors, spacing, typography } = AppTheme;
@@ -262,15 +263,20 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
                         >
                           Read More
                         </Text>
-                        <FontAwesome5
-                          name="arrow-right"
-                          size={14}
-                          color={hovered || pressed ? colors.textPrimary : colors.primary}
-                          style={[
-                            styles.resultReadMoreIcon,
-                            (hovered || pressed) && styles.resultReadMoreIconActive,
-                          ]}
-                        />
+                        <AnimatedIconShift
+                          active={hovered || pressed}
+                          style={styles.resultReadMoreIcon}
+                        >
+                          <FontAwesome5
+                            name="arrow-right"
+                            size={14}
+                            color={
+                              hovered || pressed
+                                ? colors.textPrimary
+                                : colors.primary
+                            }
+                          />
+                        </AnimatedIconShift>
                       </>
                     )}
                   </Pressable>
@@ -534,9 +540,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   resultReadMoreIcon: {
-    transform: [{ translateX: 0 }],
-  },
-  resultReadMoreIconActive: {
-    transform: [{ translateX: 4 }],
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

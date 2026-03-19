@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 type Announcement = {
@@ -136,19 +137,20 @@ export default function AnnouncementsScreen() {
                       >
                         Read More
                       </Text>
-                      <FontAwesome5
-                        name="arrow-right"
-                        size={14}
-                        color={
-                          hovered || pressed
-                            ? colors.textPrimary
-                            : colors.primary
-                        }
-                        style={[
-                          styles.readMoreIcon,
-                          (hovered || pressed) && styles.readMoreIconActive,
-                        ]}
-                      />
+                      <AnimatedIconShift
+                        active={hovered || pressed}
+                        style={styles.readMoreIcon}
+                      >
+                        <FontAwesome5
+                          name="arrow-right"
+                          size={14}
+                          color={
+                            hovered || pressed
+                              ? colors.textPrimary
+                              : colors.primary
+                          }
+                        />
+                      </AnimatedIconShift>
                     </>
                   )}
                 </Pressable>
@@ -296,9 +298,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   readMoreIcon: {
-    transform: [{ translateX: 0 }],
-  },
-  readMoreIconActive: {
-    transform: [{ translateX: 4 }],
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
