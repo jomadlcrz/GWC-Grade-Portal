@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -13,10 +12,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 import { OverlayHeader } from "./overlay-header";
+import { OverlayShell } from "./overlay-shell";
 
 type SearchOverlayProps = {
   visible: boolean;
@@ -74,81 +73,72 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
   };
 
   return (
-    <Modal
+    <OverlayShell
       visible={visible}
-      animationType="fade"
-      presentationStyle="fullScreen"
-      onRequestClose={onClose}
-      transparent={false}
+      onClose={onClose}
+      backgroundColor={DARK_BG}
+      safeAreaStyle={styles.safeArea}
     >
-      <SafeAreaView
-        style={styles.safeArea}
-        edges={["top", "left", "right", "bottom"]}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        <OverlayHeader
+          logoSource={require("@/assets/images/gwc-logo-new-white.png")}
+          title="GWC"
+          subtitle="Grade Portal"
+          onHomePress={handleHomePress}
+          onClose={onClose}
+          closeLabel="Close search"
+          accentColor={ACCENT}
+        />
+
+        {/* Search Content */}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <OverlayHeader
-            logoSource={require("@/assets/images/gwc-logo-new-white.png")}
-            title="GWC"
-            subtitle="Grade Portal"
-            onHomePress={handleHomePress}
-            onClose={onClose}
-            closeLabel="Close search"
-            accentColor={ACCENT}
-          />
+          <View style={styles.searchBox}>
+            {/* Input Wrapper for positioning the Clear Button */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                ref={inputRef}
+                placeholder="type keyword(s) here"
+                placeholderTextColor="#8b8b93"
+                value={query}
+                onChangeText={setQuery}
+                style={styles.input}
+                returnKeyType="search"
+                onSubmitEditing={handleSearch}
+              />
 
-          {/* Search Content */}
-          <ScrollView
-            contentContainerStyle={styles.content}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.searchBox}>
-              {/* Input Wrapper for positioning the Clear Button */}
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  ref={inputRef}
-                  placeholder="type keyword(s) here"
-                  placeholderTextColor="#8b8b93"
-                  value={query}
-                  onChangeText={setQuery}
-                  style={styles.input}
-                  returnKeyType="search"
-                  onSubmitEditing={handleSearch}
-                />
+              {query.length > 0 && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear search"
+                  onPress={handleClear}
+                  style={styles.clearIcon}
+                >
+                  <FontAwesome5 name="times-circle" size={18} color="#8b8b93" />
+                </Pressable>
+              )}
+            </View>
 
-                {query.length > 0 && (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Clear search"
-                    onPress={handleClear}
-                    style={styles.clearIcon}
-                  >
-                    <FontAwesome5
-                      name="times-circle"
-                      size={18}
-                      color="#8b8b93"
-                    />
-                  </Pressable>
-                )}
-              </View>
-
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Search"
-                onPress={handleSearch}
-                // @ts-ignore hovered is supported in Expo web; pressed covers native
-                style={({ pressed, hovered }) => [
-                  styles.searchButton,
-                  (pressed || hovered) && styles.searchButtonActive,
-                ]}
-              >
-                {
-                  // @ts-ignore hovered is available on web
-                  ({ pressed, hovered }) => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Search"
+              onPress={handleSearch}
+              // @ts-ignore hovered is supported in Expo web; pressed covers native
+              style={({ pressed, hovered }) => [
+                styles.searchButton,
+                (pressed || hovered) && styles.searchButtonActive,
+              ]}
+            >
+              {
+                // @ts-ignore hovered is available on web
+                ({ pressed, hovered }) => (
                   <>
                     <Text style={styles.searchButtonText}>Search</Text>
                     <FontAwesome5
@@ -162,19 +152,17 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                     />
                   </>
                 )}
-              </Pressable>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </Modal>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </OverlayShell>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: DARK_BG,
   },
   container: {
     flex: 1,

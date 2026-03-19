@@ -1,10 +1,10 @@
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 import { OverlayHeader } from "./overlay-header";
+import { OverlayShell } from "./overlay-shell";
 
 type MenuOverlayProps = {
   visible: boolean;
@@ -37,55 +37,48 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
   };
 
   return (
-    <Modal
+    <OverlayShell
       visible={visible}
-      animationType="fade"
-      presentationStyle="fullScreen"
-      onRequestClose={onClose}
-      transparent={false}
+      onClose={onClose}
+      backgroundColor={DARK_BG}
+      safeAreaStyle={styles.safeArea}
     >
-      <SafeAreaView
-        style={styles.safeArea}
-        edges={["top", "left", "right", "bottom"]}
-      >
-        <OverlayHeader
-          logoSource={require("@/assets/images/gwc-logo-new-white.png")}
-          title="GWC"
-          subtitle="Grade Portal"
-          onHomePress={handleHome}
-          onClose={onClose}
-          closeLabel="Close menu"
-          accentColor={ACCENT}
-        />
+      <OverlayHeader
+        logoSource={require("@/assets/images/gwc-logo-new-white.png")}
+        title="GWC"
+        subtitle="Grade Portal"
+        onHomePress={handleHome}
+        onClose={onClose}
+        closeLabel="Close menu"
+        accentColor={ACCENT}
+      />
 
-        <ScrollView
-          contentContainerStyle={styles.menuList}
-          showsVerticalScrollIndicator={false}
-        >
-          {menuItems.map((item) => (
-            <Pressable
-              key={item.key}
-              accessibilityRole="button"
-              accessibilityLabel={item.label}
-              onPress={onClose}
-              style={({ pressed }) => [
-                styles.menuItem,
-                pressed && styles.menuItemPressed,
-              ]}
-            >
-              <Text style={styles.menuText}>{item.label}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    </Modal>
+      <ScrollView
+        contentContainerStyle={styles.menuList}
+        showsVerticalScrollIndicator={false}
+      >
+        {menuItems.map((item) => (
+          <Pressable
+            key={item.key}
+            accessibilityRole="button"
+            accessibilityLabel={item.label}
+            onPress={onClose}
+            style={({ pressed }) => [
+              styles.menuItem,
+              pressed && styles.menuItemPressed,
+            ]}
+          >
+            <Text style={styles.menuText}>{item.label}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </OverlayShell>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: DARK_BG,
   },
   menuList: {
     paddingHorizontal: spacing.lg + 8,
