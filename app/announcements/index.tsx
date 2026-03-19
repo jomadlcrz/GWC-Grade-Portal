@@ -139,7 +139,11 @@ export default function AnnouncementsScreen() {
                       <FontAwesome5
                         name="arrow-right"
                         size={14}
-                        color={hovered || pressed ? colors.textPrimary : colors.primary}
+                        color={
+                          hovered || pressed
+                            ? colors.textPrimary
+                            : colors.primary
+                        }
                         style={[
                           styles.readMoreIcon,
                           (hovered || pressed) && styles.readMoreIconActive,
@@ -186,7 +190,7 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   heroTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
     color: colors.primary,
