@@ -44,7 +44,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
       safeAreaStyle={styles.safeArea}
     >
       <OverlayHeader
-        logoSource={require("@/assets/images/gwc-logo-new-white.png")}
+        logoSource={require("@/assets/images/gwc-logo-new-white-mobile.png")}
         title="GWC"
         subtitle="Grade Portal"
         onHomePress={handleHome}

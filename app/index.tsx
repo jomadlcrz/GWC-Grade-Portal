@@ -111,9 +111,11 @@ export default function HomeScreen() {
       >
         <View style={[styles.heroSection, { height: heroHeight }]}>
           <Image
-            source={require("@/assets/images/cover.jpg")}
+            source={require("@/assets/images/cover-mobile.jpg")}
             style={styles.heroImage}
             contentFit="cover"
+            cachePolicy="memory-disk"
+            allowDownscaling
           />
           <View style={styles.heroOverlay} />
         </View>

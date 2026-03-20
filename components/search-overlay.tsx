@@ -86,7 +86,7 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
         <OverlayHeader
-          logoSource={require("@/assets/images/gwc-logo-new-white.png")}
+          logoSource={require("@/assets/images/gwc-logo-new-white-mobile.png")}
           title="GWC"
           subtitle="Grade Portal"
           onHomePress={handleHomePress}

@@ -55,9 +55,11 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
       <View style={styles.content}>
         <View style={styles.logoWrapper}>
           <Image
-            source={require("@/assets/images/gwc-logo-new-white.png")}
+            source={require("@/assets/images/gwc-logo-new-white-mobile.png")}
             style={styles.logo}
             contentFit="contain"
+            cachePolicy="memory-disk"
+            allowDownscaling
           />
         </View>
 
