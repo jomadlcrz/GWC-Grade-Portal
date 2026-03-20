@@ -79,7 +79,6 @@ export function Header({
             source={require("@/assets/images/gwc-logo-new-mobile.png")}
             style={styles.logo}
             contentFit="contain"
-            cachePolicy="memory-disk"
             allowDownscaling
           />
         </View>

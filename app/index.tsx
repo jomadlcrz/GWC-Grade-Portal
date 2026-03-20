@@ -114,7 +114,6 @@ export default function HomeScreen() {
             source={require("@/assets/images/cover-mobile.jpg")}
             style={styles.heroImage}
             contentFit="cover"
-            cachePolicy="memory-disk"
             allowDownscaling
           />
           <View style={styles.heroOverlay} />
