@@ -67,12 +67,12 @@ export function Header({
         },
       ]}
     >
-      {/* Left side takes remaining space to push actions to the right */}
+      {/* Left side shows the brand and stays inline with its content */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Go to home"
         onPress={() => router.push("/")}
-        style={[styles.leftGroup, { flex: 1 }]}
+        style={styles.leftGroup}
       >
         <View style={styles.logoWrapper}>
           <Image

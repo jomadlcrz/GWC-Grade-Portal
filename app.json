@@ -8,7 +8,11 @@
     "scheme": "gwc-grade-portal",
     "userInterfaceStyle": "light",
     "updates": {
-      "assetPatternsToBeBundled": ["**/*"]
+      "assetBundlePatterns": [
+        "assets/images/gwc-logo-new.png",
+        "assets/images/gwc-logo-new-white.png",
+        "assets/images/cover.jpg"
+      ]
     },
     "ios": {
       "supportsTablet": true

@@ -85,7 +85,6 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   logoRow: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
