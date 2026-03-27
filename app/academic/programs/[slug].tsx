@@ -15,6 +15,9 @@ import { AppTheme, FontFamilies } from "@/constants/theme";
 const { colors, spacing } = AppTheme;
 
 const programContent = {
+  "bachelor-of-science-in-criminology": {
+    title: "BACHELOR OF SCIENCE IN CRIMINOLOGY",
+  },
   "bachelor-of-science-in-information-technology": {
     title: "BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY",
     paragraphs: [
@@ -35,6 +38,24 @@ const programContent = {
         text: "Alongside quality education is our commitment to provide the latest and advanced technology. Our program boasts a number of its laboratories that level up our delivery of education with global standards such as our CISCO Lab, and the newly established MAC laboratory. We also take pride with our Institute of Computing Studies (ICS) team, composed of competent faculty line up ready to implement flexible learning scheme fit to students' teaching and learning needs.",
       },
     ],
+  },
+  "bachelor-of-science-in-computer-science": {
+    title: "BACHELOR OF SCIENCE IN COMPUTER SCIENCE",
+  },
+  "associate-in-computer-science": {
+    title: "ASSOCIATE IN COMPUTER SCIENCE",
+  },
+  "bachelor-of-science-in-business-administration": {
+    title: "BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION",
+  },
+  "major-in-marketing-management": {
+    title: "MAJOR IN MARKETING MANAGEMENT",
+  },
+  "bachelor-of-elementary-education": {
+    title: "BACHELOR OF ELEMENTARY EDUCATION",
+  },
+  "bachelor-of-secondary-education": {
+    title: "BACHELOR OF SECONDARY EDUCATION",
   },
 } as const;
 
@@ -77,7 +98,8 @@ export default function ProgramDetailScreen() {
         <View style={styles.body}>
           <View style={styles.contentCard}>
             {program ? (
-              <>
+              "paragraphs" in program ? (
+                <>
                 <Text style={styles.paragraph}>
                   {program.paragraphs[0].before}
                   <Text style={styles.paragraphBold}>
@@ -91,7 +113,12 @@ export default function ProgramDetailScreen() {
                     {paragraph.text}
                   </Text>
                 ))}
-              </>
+                </>
+              ) : (
+                <Text style={styles.paragraph}>
+                  Details for this academic program will be added soon.
+                </Text>
+              )
             ) : (
               <Text style={styles.paragraph}>
                 The requested academic program page is not available yet.

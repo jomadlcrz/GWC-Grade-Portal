@@ -17,55 +17,109 @@ const ACCENT = colors.primary;
 
 type AcademicEntry = {
   label: string;
-  route?: string;
+  route: string;
 };
 
-const academicGroups = [
+type AcademicAccordionGroup = {
+  key: string;
+  label: string;
+  type: "accordion";
+  items: AcademicEntry[];
+};
+
+type AcademicLinkGroup = {
+  key: string;
+  label: string;
+  type: "link";
+  route: string;
+};
+
+type AcademicGroup = AcademicAccordionGroup | AcademicLinkGroup;
+
+const academicGroups: AcademicGroup[] = [
   {
     key: "programs",
     label: "PROGRAMS",
+    type: "accordion",
     items: [
-      { label: "Bachelor of Science in Criminology (BSCrim)" },
+      {
+        label: "Bachelor of Science in Criminology (BSCrim)",
+        route: "/academic/programs/bachelor-of-science-in-criminology",
+      },
       {
         label: "Bachelor of Science in Information Technology (BSIT)",
         route:
           "/academic/programs/bachelor-of-science-in-information-technology",
       },
-      { label: "Bachelor of Science in Computer Science (BSCS)" },
-      { label: "Associate in Computer Science (ACS) - 2-Year Program" },
-      { label: "Bachelor of Science in Business Administration (BSBA)" },
-      { label: "Major in Marketing Management" },
-      { label: "Bachelor of Elementary Education (BEEd)" },
-      { label: "Bachelor of Secondary Education (BSEd)" },
+      {
+        label: "Bachelor of Science in Computer Science (BSCS)",
+        route: "/academic/programs/bachelor-of-science-in-computer-science",
+      },
+      {
+        label: "Associate in Computer Science (ACS) - 2-Year Program",
+        route: "/academic/programs/associate-in-computer-science",
+      },
+      {
+        label: "Bachelor of Science in Business Administration (BSBA)",
+        route:
+          "/academic/programs/bachelor-of-science-in-business-administration",
+      },
+      {
+        label: "Major in Marketing Management",
+        route: "/academic/programs/major-in-marketing-management",
+      },
+      {
+        label: "Bachelor of Elementary Education (BEEd)",
+        route: "/academic/programs/bachelor-of-elementary-education",
+      },
+      {
+        label: "Bachelor of Secondary Education (BSEd)",
+        route: "/academic/programs/bachelor-of-secondary-education",
+      },
     ],
   },
   {
     key: "strands",
     label: "STRANDS",
+    type: "accordion",
     items: [
-      { label: "Accountancy, Business and Management (ABM)" },
-      { label: "Humanities and Social Sciences (HUMSS)" },
-      { label: "Science, Technology, Engineering and Mathematics (STEM)" },
-      { label: "Technical-Vocational-Livelihood (TVL)" },
+      {
+        label: "Accountancy, Business and Management (ABM)",
+        route: "/academic/strands/accountancy-business-and-management",
+      },
+      {
+        label: "Humanities and Social Sciences (HUMSS)",
+        route: "/academic/strands/humanities-and-social-sciences",
+      },
+      {
+        label: "Science, Technology, Engineering and Mathematics (STEM)",
+        route: "/academic/strands/science-technology-engineering-and-mathematics",
+      },
+      {
+        label: "Technical-Vocational-Livelihood (TVL)",
+        route: "/academic/strands/technical-vocational-livelihood",
+      },
     ],
   },
   {
     key: "faculty",
     label: "FACULTY",
+    type: "link",
     route: "/academic/faculties",
-    items: [
-      { label: "Prof. Maria L. Santos, MAEd" },
-      { label: "Prof. John R. Dela Cruz, MIT" },
-      { label: "Prof. Angela P. Navarro, MBA" },
-      { label: "Prof. Carlo M. Reyes, MSc Criminology" },
-    ],
   },
   {
     key: "special-programs",
     label: "SPECIAL PROGRAMS",
-    items: [{ label: "Professional Education Unit Earner (PEUE)" }],
+    type: "accordion",
+    items: [
+      {
+        label: "Professional Education Unit Earner (PEUE)",
+        route:
+          "/academic/special-programs/professional-education-unit-earner",
+      },
+    ],
   },
-] as const;
+];
 
 export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
   const router = useRouter();
@@ -155,7 +209,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                           accessibilityRole="button"
                           accessibilityLabel={group.label}
                           onPress={() => {
-                            if ("route" in group && group.route) {
+                            if (group.type === "link") {
                               onClose();
                               router.push(group.route);
                               return;
@@ -171,43 +225,30 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                           ]}
                         >
                           <Text style={styles.groupTitle}>{group.label}</Text>
-                          {"route" in group && group.route ? null : (
+                          {group.type === "link" ? null : (
                             <Text style={styles.groupIndicator}>
                               {openAcademicGroup === group.key ? "-" : "+"}
                             </Text>
                           )}
                         </Pressable>
 
-                        {!("route" in group && group.route) &&
+                        {group.type === "accordion" &&
                         openAcademicGroup === group.key
                           ? group.items.map((entry: AcademicEntry) => (
                               <Pressable
                                 key={entry.label}
-                                accessibilityRole={
-                                  entry.route ? "button" : undefined
-                                }
+                                accessibilityRole="button"
                                 accessibilityLabel={entry.label}
                                 onPress={() => {
-                                  if (!entry.route) {
-                                    return;
-                                  }
-
                                   onClose();
                                   router.push(entry.route);
                                 }}
                                 style={({ pressed }) => [
                                   styles.groupItemRow,
-                                  pressed &&
-                                    entry.route &&
-                                    styles.groupItemRowPressed,
+                                  pressed && styles.groupItemRowPressed,
                                 ]}
                               >
-                                <Text
-                                  style={[
-                                    styles.groupItem,
-                                    entry.route && styles.groupItemLink,
-                                  ]}
-                                >
+                                <Text style={[styles.groupItem, styles.groupItemLink]}>
                                   - {entry.label}
                                 </Text>
                               </Pressable>

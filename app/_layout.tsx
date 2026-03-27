@@ -80,6 +80,14 @@ export default function RootLayout() {
             name="academic/programs/[slug]"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="academic/strands/[slug]"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="academic/special-programs/[slug]"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="search" options={{ headerShown: false }} />
         </Stack>
 
