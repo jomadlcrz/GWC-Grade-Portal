@@ -15,29 +15,38 @@ const { colors, spacing, typography } = AppTheme;
 const DARK_BG = "#0d1424";
 const ACCENT = colors.primary;
 
+type AcademicEntry = {
+  label: string;
+  route?: string;
+};
+
 const academicGroups = [
   {
     key: "programs",
     label: "PROGRAMS",
     items: [
-      "Bachelor of Science in Criminology (BSCrim)",
-      "Bachelor of Science in Information Technology (BSIT)",
-      "Bachelor of Science in Computer Science (BSCS)",
-      "Associate in Computer Science (ACS) - 2-Year Program",
-      "Bachelor of Science in Business Administration (BSBA)",
-      "Major in Marketing Management",
-      "Bachelor of Elementary Education (BEEd)",
-      "Bachelor of Secondary Education (BSEd)",
+      { label: "Bachelor of Science in Criminology (BSCrim)" },
+      {
+        label: "Bachelor of Science in Information Technology (BSIT)",
+        route:
+          "/academic/programs/bachelor-of-science-in-information-technology",
+      },
+      { label: "Bachelor of Science in Computer Science (BSCS)" },
+      { label: "Associate in Computer Science (ACS) - 2-Year Program" },
+      { label: "Bachelor of Science in Business Administration (BSBA)" },
+      { label: "Major in Marketing Management" },
+      { label: "Bachelor of Elementary Education (BEEd)" },
+      { label: "Bachelor of Secondary Education (BSEd)" },
     ],
   },
   {
     key: "strands",
     label: "STRANDS",
     items: [
-      "Accountancy, Business and Management (ABM)",
-      "Humanities and Social Sciences (HUMSS)",
-      "Science, Technology, Engineering and Mathematics (STEM)",
-      "Technical-Vocational-Livelihood (TVL)",
+      { label: "Accountancy, Business and Management (ABM)" },
+      { label: "Humanities and Social Sciences (HUMSS)" },
+      { label: "Science, Technology, Engineering and Mathematics (STEM)" },
+      { label: "Technical-Vocational-Livelihood (TVL)" },
     ],
   },
   {
@@ -45,16 +54,16 @@ const academicGroups = [
     label: "FACULTY",
     route: "/academic/faculties",
     items: [
-      "Prof. Maria L. Santos, MAEd",
-      "Prof. John R. Dela Cruz, MIT",
-      "Prof. Angela P. Navarro, MBA",
-      "Prof. Carlo M. Reyes, MSc Criminology",
+      { label: "Prof. Maria L. Santos, MAEd" },
+      { label: "Prof. John R. Dela Cruz, MIT" },
+      { label: "Prof. Angela P. Navarro, MBA" },
+      { label: "Prof. Carlo M. Reyes, MSc Criminology" },
     ],
   },
   {
     key: "special-programs",
     label: "SPECIAL PROGRAMS",
-    items: ["Professional Education Unit Earner (PEUE)"],
+    items: [{ label: "Professional Education Unit Earner (PEUE)" }],
   },
 ] as const;
 
@@ -129,7 +138,10 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                   ]}
                 >
                   <Text
-                    style={[styles.menuText, isAcademicsOpen && styles.menuTextActive]}
+                    style={[
+                      styles.menuText,
+                      isAcademicsOpen && styles.menuTextActive,
+                    ]}
                   >
                     {item.label}
                   </Text>
@@ -168,10 +180,37 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
 
                         {!("route" in group && group.route) &&
                         openAcademicGroup === group.key
-                          ? group.items.map((entry) => (
-                              <Text key={entry} style={styles.groupItem}>
-                                - {entry}
-                              </Text>
+                          ? group.items.map((entry: AcademicEntry) => (
+                              <Pressable
+                                key={entry.label}
+                                accessibilityRole={
+                                  entry.route ? "button" : undefined
+                                }
+                                accessibilityLabel={entry.label}
+                                onPress={() => {
+                                  if (!entry.route) {
+                                    return;
+                                  }
+
+                                  onClose();
+                                  router.push(entry.route);
+                                }}
+                                style={({ pressed }) => [
+                                  styles.groupItemRow,
+                                  pressed &&
+                                    entry.route &&
+                                    styles.groupItemRowPressed,
+                                ]}
+                              >
+                                <Text
+                                  style={[
+                                    styles.groupItem,
+                                    entry.route && styles.groupItemLink,
+                                  ]}
+                                >
+                                  - {entry.label}
+                                </Text>
+                              </Pressable>
                             ))
                           : null}
                       </View>
@@ -280,5 +319,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.bodySemi,
     paddingLeft: spacing.xs,
     textTransform: "uppercase",
+  },
+  groupItemRow: {
+    alignSelf: "stretch",
+  },
+  groupItemRowPressed: {
+    opacity: 0.75,
+  },
+  groupItemLink: {
+    color: colors.surface,
   },
 });
