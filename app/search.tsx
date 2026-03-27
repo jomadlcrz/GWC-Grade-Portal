@@ -17,11 +17,11 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
-import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { announcements } from "@/constants/announcements";
 import { posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
@@ -185,7 +185,8 @@ function TablePanel({
                         <Text
                           style={[
                             styles.resultReadMoreText,
-                            (hovered || pressed) && styles.resultReadMoreTextActive,
+                            (hovered || pressed) &&
+                              styles.resultReadMoreTextActive,
                           ]}
                         >
                           Read More
@@ -441,12 +442,9 @@ const styles = StyleSheet.create({
   },
   resultCard: {
     backgroundColor: colors.surface,
-    borderRadius: spacing.md,
     paddingHorizontal: spacing.md,
     paddingTop: 0,
     paddingBottom: spacing.md + spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.border,
     gap: spacing.xs,
   },
   resultImageWrapper: {
