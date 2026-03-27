@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Keyboard,
@@ -22,6 +22,8 @@ import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AnimatedIconShift } from "@/components/animated-icon-shift";
+import { announcements } from "@/constants/announcements";
+import { posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors, spacing, typography } = AppTheme;
@@ -30,116 +32,32 @@ type SearchRecord = {
   id: string;
   title: string;
   summary: string;
-  date: string;
+  date?: string;
   image: string;
   keywords: string[];
+  route: string;
 };
 
-const SEARCH_RECORDS: SearchRecord[] = [
-  {
-    id: "global-arena",
-    title: "DAAD Hosts Info Session at GWC for International Academic Exchange",
-    summary:
-      "International academic exchange opportunities for students, faculty, and staff through partner institutions.",
-    date: "March 18, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["daad", "exchange", "international", "academic", "global"],
-  },
-  {
-    id: "community",
-    title: "Student Council Launches Campus-Wide Service Drive",
-    summary:
-      "Student life, organizations, and collaboration spaces that keep the GWC family connected.",
-    date: "March 18, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: [
-      "student council",
-      "service drive",
-      "community",
-      "organizations",
-    ],
-  },
-  {
-    id: "story-asean",
-    title: "Student Delegates Join ASEAN Youth Forum",
-    summary:
-      "A featured student story about delegates representing GWC in a regional youth forum.",
-    date: "March 17, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["asean", "youth forum", "delegates", "students"],
-  },
-  {
-    id: "story-research-hub",
-    title: "New Research Hub Opens for Engineering Cohort",
-    summary:
-      "A new research space opens to support engineering students and academic collaboration.",
-    date: "March 17, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["research hub", "engineering", "cohort", "laboratory"],
-  },
+const STATIC_SEARCH_RECORDS: SearchRecord[] = [
   {
     id: "events",
     title: "Events",
     summary:
       "Schedules, registration, and on-campus happenings collected in the events section.",
-    date: "March 16, 2026",
     image:
       "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
     keywords: ["events", "schedule", "registration", "campus happenings"],
-  },
-  {
-    id: "perspective",
-    title: "Plastic Free Advocacy",
-    summary:
-      "A perspective piece on zero-waste plastic management and campus sustainability advocacy.",
-    date: "March 16, 2026",
-    image:
-      "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["plastic free", "zero waste", "advocacy", "sustainability"],
+    route: "/",
   },
   {
     id: "careers",
     title: "Available Faculty Positions",
     summary:
       "Faculty openings including Instructor I, Instructor II, and Instructor III positions.",
-    date: "March 15, 2026",
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     keywords: ["careers", "faculty", "instructor", "vacant", "salary grade"],
-  },
-  {
-    id: "announcement-summer-2026-enrollment",
-    title: "Summer Term Enrollment Opens",
-    summary:
-      "Enrollment for Summer 2026 starts on March 25. Outstanding balances must be settled before proceeding.",
-    date: "March 16, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["summer", "enrollment", "march 25", "balances"],
-  },
-  {
-    id: "announcement-library-maintenance",
-    title: "Library System Maintenance",
-    summary:
-      "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
-    date: "March 16, 2026",
-    image:
-      "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["library", "maintenance", "system", "march 20", "upgrades"],
-  },
-  {
-    id: "announcement-graduation-rehearsal",
-    title: "Graduation Rehearsal Schedule",
-    summary:
-      "Graduating students will rehearse on April 5 at the main auditorium, with attendance marked mandatory.",
-    date: "March 15, 2026",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    keywords: ["graduation", "rehearsal", "april 5", "auditorium"],
+    route: "/",
   },
 ];
 
@@ -197,9 +115,15 @@ type TablePanelProps = {
   hasSearched: boolean;
   searchedQuery: string;
   results: SearchRecord[];
+  onResultPress: (route: string) => void;
 };
 
-function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
+function TablePanel({
+  hasSearched,
+  searchedQuery,
+  results,
+  onResultPress,
+}: TablePanelProps) {
   return (
     <View style={styles.tablePanel}>
       <View style={styles.tableHeader}>
@@ -250,6 +174,7 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
                 <View style={styles.resultFooter}>
                   <Pressable
                     accessibilityRole="button"
+                    onPress={() => onResultPress(result.route)}
                     // @ts-ignore hovered is web-only; pressed covers mobile
                     style={styles.resultReadMoreRow}
                   >
@@ -293,6 +218,7 @@ function TablePanel({ hasSearched, searchedQuery, results }: TablePanelProps) {
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const router = useRouter();
   const params = useLocalSearchParams<{ query?: string | string[] }>();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -315,6 +241,38 @@ export default function SearchScreen() {
   }, [params.query]);
 
   const horizontalPadding = width < 400 ? 20 : 40;
+  const searchRecords = useMemo<SearchRecord[]>(() => {
+    const postRecords = Object.values(posts).map((post) => ({
+      id: post.slug,
+      title: post.title,
+      summary: post.summary,
+      image: post.image,
+      keywords: [
+        post.category.toLowerCase(),
+        ...post.title.toLowerCase().split(/\s+/),
+        ...post.summary.toLowerCase().split(/\s+/),
+      ],
+      route: `/post/${post.slug}`,
+    }));
+
+    const announcementRecords = Object.values(announcements).map(
+      (announcement) => ({
+        id: announcement.slug,
+        title: announcement.title,
+        summary: announcement.summary,
+        date: announcement.date,
+        image: announcement.image,
+        keywords: [
+          "announcement",
+          ...announcement.title.toLowerCase().split(/\s+/),
+          ...announcement.summary.toLowerCase().split(/\s+/),
+        ],
+        route: `/post/${announcement.slug}`,
+      }),
+    );
+
+    return [...postRecords, ...announcementRecords, ...STATIC_SEARCH_RECORDS];
+  }, []);
 
   const results = useMemo(() => {
     if (!searchedQuery) {
@@ -327,11 +285,11 @@ export default function SearchScreen() {
       .split(/\s+/)
       .filter(Boolean);
 
-    return SEARCH_RECORDS.filter((record) => {
+    return searchRecords.filter((record) => {
       const haystack = [
         record.title,
         record.summary,
-        record.date,
+        record.date ?? "",
         ...record.keywords,
       ]
         .join(" ")
@@ -339,7 +297,7 @@ export default function SearchScreen() {
 
       return normalizedTerms.every((term) => haystack.includes(term));
     });
-  }, [searchedQuery]);
+  }, [searchRecords, searchedQuery]);
 
   const handleSearch = () => {
     setSearchedQuery(query.trim());
@@ -380,6 +338,7 @@ export default function SearchScreen() {
             hasSearched={searchedQuery.length > 0}
             searchedQuery={searchedQuery}
             results={results}
+            onResultPress={(route) => router.push(route as never)}
           />
         </View>
 

@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
@@ -12,56 +13,18 @@ import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AnimatedIconShift } from "@/components/animated-icon-shift";
+import { announcements } from "@/constants/announcements";
 import { AppTheme, FontFamilies } from "@/constants/theme";
-
-type Announcement = {
-  id: string;
-  title: string;
-  body: string;
-  date: string;
-  image: string;
-  link?: string;
-};
 
 const { colors, spacing, typography } = AppTheme;
 
 export default function AnnouncementsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const announcements = useMemo<Announcement[]>(
-    () => [
-      {
-        id: "summer-2026-enrollment",
-        title: "Summer Term Enrollment Opens",
-        body: "Enrollment for Summer 2026 starts on March 25. Please settle outstanding balances before proceeding.",
-        date: "March 16, 2026",
-        image:
-          "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-        link: "#",
-      },
-      {
-        id: "library-maintenance",
-        title: "Library System Maintenance",
-        body: "Online library access will be unavailable on March 20 from 1:00 AM to 4:00 AM for scheduled upgrades.",
-        date: "March 16, 2026",
-        image:
-          "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1200&q=80",
-        link: "#",
-      },
-      {
-        id: "graduation-rehearsal",
-        title: "Graduation Rehearsal Schedule",
-        body: "Rehearsals for graduating students will be held on April 5 at the main auditorium. Attendance is mandatory.",
-        date: "March 15, 2026",
-        image:
-          "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-        link: "#",
-      },
-    ],
-    [],
-  );
+  const announcementList = useMemo(() => Object.values(announcements), []);
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
@@ -98,8 +61,8 @@ export default function AnnouncementsScreen() {
         </View>
 
         <View style={styles.list}>
-          {announcements.map((item) => (
-            <View key={item.id} style={styles.card}>
+          {announcementList.map((item) => (
+            <View key={item.slug} style={styles.card}>
               <View style={styles.cardImageWrapper}>
                 <Image
                   source={{ uri: item.image }}
@@ -119,11 +82,12 @@ export default function AnnouncementsScreen() {
                 <Text style={styles.date}>Posted: {item.date}</Text>
               </View>
 
-              <Text style={styles.body}>{item.body}</Text>
+              <Text style={styles.body}>{item.summary}</Text>
 
               <View style={styles.cardFooter}>
                 <Pressable
                   accessibilityRole="button"
+                  onPress={() => router.push(`/post/${item.slug}`)}
                   // @ts-ignore hovered is web-only; pressed covers mobile
                   style={styles.readMoreRow}
                 >

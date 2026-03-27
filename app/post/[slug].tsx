@@ -11,12 +11,14 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
+import { announcements } from "@/constants/announcements";
 import { posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors } = AppTheme;
 
 type PostSlug = keyof typeof posts;
+type AnnouncementSlug = keyof typeof announcements;
 
 export default function PostDetailScreen() {
   const insets = useSafeAreaInsets();
@@ -27,6 +29,11 @@ export default function PostDetailScreen() {
   const resolvedSlug = Array.isArray(slug) ? slug[0] : slug;
   const post =
     resolvedSlug && resolvedSlug in posts ? posts[resolvedSlug as PostSlug] : null;
+  const announcement =
+    !post && resolvedSlug && resolvedSlug in announcements
+      ? announcements[resolvedSlug as AnnouncementSlug]
+      : null;
+  const entry = post ?? announcement;
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
@@ -44,15 +51,18 @@ export default function PostDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.body}>
-          {post ? (
+          {entry ? (
             <>
               <Image
-                source={{ uri: post.image }}
+                source={{ uri: entry.image }}
                 style={styles.banner}
                 contentFit="cover"
               />
-              <Text style={styles.postTitle}>{post.title}</Text>
-              {post.body.map((paragraph) => (
+              <Text style={styles.postTitle}>{entry.title}</Text>
+              {"date" in entry ? (
+                <Text style={styles.metaText}>Posted: {entry.date}</Text>
+              ) : null}
+              {entry.body.map((paragraph) => (
                 <Text key={paragraph} style={styles.paragraph}>
                   {paragraph}
                 </Text>
@@ -103,6 +113,12 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontFamily: FontFamilies.headingBold,
     textTransform: "uppercase",
+  },
+  metaText: {
+    color: colors.primary,
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: FontFamilies.accent,
   },
   paragraph: {
     color: colors.textPrimary,
