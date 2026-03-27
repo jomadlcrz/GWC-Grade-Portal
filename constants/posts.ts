@@ -2,6 +2,7 @@ export type PostRecord = {
   slug: string;
   title: string;
   category: string;
+  date: string;
   image: string;
   body: string[];
 };
@@ -11,6 +12,7 @@ const rawPosts: Record<string, PostRecord> = {
     slug: "daad-hosts-info-session-at-gwc-for-international-academic-exchange",
     title: "DAAD Hosts Info Session at GWC for International Academic Exchange",
     category: "GWC IN THE GLOBAL ARENA",
+    date: "March 18, 2026",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
     body: [
@@ -23,6 +25,7 @@ const rawPosts: Record<string, PostRecord> = {
     slug: "student-delegates-join-asean-youth-forum",
     title: "Student Delegates Join ASEAN Youth Forum",
     category: "GWC IN THE GLOBAL ARENA",
+    date: "March 17, 2026",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
     body: [
@@ -35,6 +38,7 @@ const rawPosts: Record<string, PostRecord> = {
     slug: "new-research-hub-opens-for-engineering-cohort",
     title: "New Research Hub Opens for Engineering Cohort",
     category: "GWC IN THE GLOBAL ARENA",
+    date: "March 17, 2026",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
     body: [
@@ -47,6 +51,7 @@ const rawPosts: Record<string, PostRecord> = {
     slug: "student-council-launches-campus-wide-service-drive",
     title: "Student Council Launches Campus-Wide Service Drive",
     category: "GWC IN THE COMMUNITY",
+    date: "March 18, 2026",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
     body: [
@@ -59,6 +64,7 @@ const rawPosts: Record<string, PostRecord> = {
     slug: "plastic-free-advocacy",
     title: "PLASTIC FREE ADVOCACY",
     category: "PERSPECTIVES + OPINIONS",
+    date: "March 16, 2026",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
     body: [

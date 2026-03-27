@@ -1,3 +1,4 @@
+import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -60,7 +61,14 @@ export default function PostDetailScreen() {
               />
               <Text style={styles.postTitle}>{entry.title}</Text>
               {"date" in entry ? (
-                <Text style={styles.metaText}>Posted: {entry.date}</Text>
+                <View style={styles.metaRow}>
+                  <FontAwesome5
+                    name="clock"
+                    size={14}
+                    color={colors.textSecondary}
+                  />
+                  <Text style={styles.metaText}>Posted: {entry.date}</Text>
+                </View>
               ) : null}
               {entry.body.map((paragraph) => (
                 <Text key={paragraph} style={styles.paragraph}>
@@ -114,10 +122,15 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.headingBold,
     textTransform: "uppercase",
   },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: -4,
+  },
   metaText: {
-    color: colors.primary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 12,
+    color: colors.textMuted,
     fontFamily: FontFamilies.accent,
   },
   paragraph: {
