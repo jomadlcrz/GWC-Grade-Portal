@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#cdd5df",
   },
   name: {
-    color: "#c21f2f",
+    color: colors.primary,
     fontSize: 16,
     lineHeight: 22,
     fontFamily: FontFamilies.accent,
