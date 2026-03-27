@@ -32,7 +32,7 @@ type SearchRecord = {
   id: string;
   title: string;
   summary: string;
-  date?: string;
+  date: string;
   image: string;
   keywords: string[];
   route: string;
@@ -44,6 +44,7 @@ const STATIC_SEARCH_RECORDS: SearchRecord[] = [
     title: "Events",
     summary:
       "Schedules, registration, and on-campus happenings collected in the events section.",
+    date: "March 16, 2026",
     image:
       "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
     keywords: ["events", "schedule", "registration", "campus happenings"],
@@ -54,6 +55,7 @@ const STATIC_SEARCH_RECORDS: SearchRecord[] = [
     title: "Available Faculty Positions",
     summary:
       "Faculty openings including Instructor I, Instructor II, and Instructor III positions.",
+    date: "March 15, 2026",
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     keywords: ["careers", "faculty", "instructor", "vacant", "salary grade"],
@@ -155,7 +157,7 @@ function TablePanel({
                 <View style={styles.resultImageWrapper}>
                   <Image
                     source={{ uri: result.image }}
-                    style={StyleSheet.absoluteFillObject}
+                    style={styles.resultImage}
                     contentFit="cover"
                   />
                 </View>
@@ -246,6 +248,7 @@ export default function SearchScreen() {
       id: post.slug,
       title: post.title,
       summary: post.summary,
+      date: post.date,
       image: post.image,
       keywords: [
         post.category.toLowerCase(),
@@ -289,7 +292,7 @@ export default function SearchScreen() {
       const haystack = [
         record.title,
         record.summary,
-        record.date ?? "",
+        record.date,
         ...record.keywords,
       ]
         .join(" ")
@@ -447,13 +450,16 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   resultImageWrapper: {
-    height: 140,
+    backgroundColor: colors.surface,
+    borderWidth: 0.5,
+    borderColor: colors.border,
+    padding: 2,
     marginHorizontal: -spacing.md,
     marginBottom: spacing.md,
-    borderTopLeftRadius: spacing.md,
-    borderTopRightRadius: spacing.md,
-    overflow: "hidden",
-    backgroundColor: colors.mutedSurface,
+  },
+  resultImage: {
+    width: "100%",
+    height: 190,
   },
   resultTitle: {
     fontSize: 24,
