@@ -3,19 +3,16 @@ export type PostRecord = {
   title: string;
   category: string;
   image: string;
-  summary: string;
   body: string[];
 };
 
-export const posts: Record<string, PostRecord> = {
+const rawPosts: Record<string, PostRecord> = {
   "daad-hosts-info-session-at-gwc-for-international-academic-exchange": {
     slug: "daad-hosts-info-session-at-gwc-for-international-academic-exchange",
     title: "DAAD Hosts Info Session at GWC for International Academic Exchange",
     category: "GWC IN THE GLOBAL ARENA",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-    summary:
-      "Providing students, faculty, and staff with insights and opportunities from partners across the globe.",
     body: [
       "Golden West Colleges welcomed delegates and speakers for an information session focused on international academic exchange pathways. The program introduced students and faculty members to overseas scholarship opportunities, institutional linkages, and application requirements.",
       "The session highlighted how academic exchange can strengthen research collaboration, cultural understanding, and student readiness for global learning environments. Participants were also briefed on documentation, eligibility, and possible partner institutions.",
@@ -28,8 +25,6 @@ export const posts: Record<string, PostRecord> = {
     category: "GWC IN THE GLOBAL ARENA",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-    summary:
-      "Student representatives joined a regional forum centered on leadership, collaboration, and youth participation.",
     body: [
       "Student delegates represented the college in a regional youth forum that gathered participants from across Southeast Asia. The event focused on leadership, civic participation, and cross-cultural dialogue.",
       "Delegates joined workshops and discussion sessions that explored student-led initiatives, community impact, and regional partnerships among higher education institutions.",
@@ -42,8 +37,6 @@ export const posts: Record<string, PostRecord> = {
     category: "GWC IN THE GLOBAL ARENA",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-    summary:
-      "A new research space was introduced to support collaboration, project work, and technical study.",
     body: [
       "A new research hub has opened to give students a stronger environment for collaborative projects, technical consultation, and guided study sessions.",
       "The space is intended to support capstone work, prototype development, and interdisciplinary research activity among student groups and faculty mentors.",
@@ -56,8 +49,6 @@ export const posts: Record<string, PostRecord> = {
     category: "GWC IN THE COMMUNITY",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-    summary:
-      "Student life, organizations, and collaboration spaces that keep the GWC family connected.",
     body: [
       "The student council launched a campus-wide service drive that encourages participation from student organizations, faculty advisers, and volunteers across different departments.",
       "The initiative focuses on coordinated outreach, donation collection, and service-oriented activities designed to strengthen community engagement within and beyond the campus.",
@@ -70,8 +61,6 @@ export const posts: Record<string, PostRecord> = {
     category: "PERSPECTIVES + OPINIONS",
     image:
       "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-    summary:
-      "A perspective on zero-waste plastic management and campus environmental responsibility.",
     body: [
       "As the Field of Study Head for Professional Education, my advocacy in life is all about zero-waste plastic management in general. As the former pioneering adviser of the Science Educators Guild under the Institute of Teacher Education, we started shaping a long-term plastic-free advocacy within the college community.",
       "The initiative calls for practical campus habits, stronger awareness, and a collective commitment to reducing waste in learning spaces, events, and student-led activities.",
@@ -79,6 +68,16 @@ export const posts: Record<string, PostRecord> = {
     ],
   },
 };
+
+export const posts = Object.fromEntries(
+  Object.entries(rawPosts).map(([slug, post]) => [
+    slug,
+    {
+      ...post,
+      summary: post.body[0],
+    },
+  ]),
+) as Record<string, PostRecord & { summary: string }>;
 
 export const landingSections = [
   {
