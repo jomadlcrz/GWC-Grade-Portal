@@ -11,7 +11,7 @@ type MenuOverlayProps = {
   onClose: () => void;
 };
 
-const { colors, spacing, typography } = AppTheme;
+const { colors, spacing } = AppTheme;
 const DARK_BG = "#0d1424";
 const ACCENT = colors.primary;
 
@@ -185,10 +185,11 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                       return next;
                     })
                   }
-                  style={({ pressed }) => [
+                  // @ts-ignore hovered is web-only; pressed covers mobile
+                  style={({ hovered, pressed }) => [
                     styles.menuItem,
                     isAcademicsOpen && styles.menuItemActive,
-                    pressed && styles.menuItemPressed,
+                    (hovered || pressed) && styles.menuItemHover,
                   ]}
                 >
                   <Text
@@ -219,9 +220,10 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                               current === group.key ? null : group.key,
                             );
                           }}
-                          style={({ pressed }) => [
+                          // @ts-ignore hovered is web-only; pressed covers mobile
+                          style={({ hovered, pressed }) => [
                             styles.groupTrigger,
-                            pressed && styles.groupTriggerPressed,
+                            (hovered || pressed) && styles.groupTriggerHover,
                           ]}
                         >
                           <Text style={styles.groupTitle}>{group.label}</Text>
@@ -243,9 +245,11 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                                   onClose();
                                   router.push(entry.route);
                                 }}
-                                style={({ pressed }) => [
+                                // @ts-ignore hovered is web-only; pressed covers mobile
+                                style={({ hovered, pressed }) => [
                                   styles.groupItemRow,
-                                  pressed && styles.groupItemRowPressed,
+                                  (hovered || pressed) &&
+                                    styles.groupItemRowHover,
                                 ]}
                               >
                                 <Text style={[styles.groupItem, styles.groupItemLink]}>
@@ -268,9 +272,10 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
               accessibilityRole="button"
               accessibilityLabel={item.label}
               onPress={onClose}
-              style={({ pressed }) => [
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
                 styles.menuItem,
-                pressed && styles.menuItemPressed,
+                (hovered || pressed) && styles.menuItemHover,
               ]}
             >
               <Text style={styles.menuText}>{item.label}</Text>
@@ -293,28 +298,31 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   menuItem: {
+    alignSelf: "flex-start",
     paddingVertical: spacing.md + 6,
     paddingHorizontal: spacing.md,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
     borderRadius: 10,
   },
-  menuItemPressed: {
-    backgroundColor: "#131a2b",
+  menuItemHover: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
   },
   menuItemActive: {
     alignSelf: "flex-start",
     backgroundColor: colors.surface,
-    borderLeftWidth: 4,
-    borderLeftColor: ACCENT,
+    borderBottomColor: colors.primary,
     borderRadius: 0,
   },
   menuText: {
     color: "#f7f7fa",
-    fontSize: typography.title,
+    fontSize: 28,
     fontWeight: "800",
     fontFamily: FontFamilies.headingBold,
     letterSpacing: 0.4,
     textTransform: "uppercase",
-    lineHeight: typography.title + 6,
+    lineHeight: 34,
   },
   menuTextActive: {
     color: colors.textPrimary,
@@ -330,13 +338,17 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   groupTrigger: {
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: spacing.sm,
     paddingVertical: 2,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
   },
-  groupTriggerPressed: {
-    opacity: 0.75,
+  groupTriggerHover: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
   },
   groupTitle: {
     color: "#f7f7fa",
@@ -362,10 +374,13 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   groupItemRow: {
-    alignSelf: "stretch",
+    alignSelf: "flex-start",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
   },
-  groupItemRowPressed: {
-    opacity: 0.75,
+  groupItemRowHover: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
   },
   groupItemLink: {
     color: colors.surface,
