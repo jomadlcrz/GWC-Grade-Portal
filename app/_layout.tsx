@@ -72,6 +72,10 @@ export default function RootLayout() {
             name="announcements/index"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="academic/faculties/index"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="search" options={{ headerShown: false }} />
         </Stack>
 

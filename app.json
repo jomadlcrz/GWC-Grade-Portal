@@ -43,7 +43,10 @@
     },
     "extra": {
       "router": {},
-      "eas": {}
-    }
+      "eas": {
+        "projectId": "7908bbb7-ad89-43f8-bd70-bb8d4f8cdde0"
+      }
+    },
+    "owner": "gwc-grade-portal-haha"
   }
 }
