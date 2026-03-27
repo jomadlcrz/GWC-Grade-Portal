@@ -279,5 +279,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontFamily: FontFamilies.bodySemi,
     paddingLeft: spacing.xs,
+    textTransform: "uppercase",
   },
 });
