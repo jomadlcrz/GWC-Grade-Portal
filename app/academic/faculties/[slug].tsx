@@ -1,4 +1,5 @@
 import { Image } from "expo-image";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
@@ -14,28 +15,38 @@ import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors, spacing } = AppTheme;
 
-const departmentTabs = ["IAS", "IBCE", "IHTM", "ITE"] as const;
-type DepartmentTab = (typeof departmentTabs)[number];
+const departmentTabs = [
+  { label: "IAS", slug: "ias" },
+  { label: "IBCE", slug: "ibce" },
+  { label: "IHTM", slug: "ihtm" },
+  { label: "ITE", slug: "ite" },
+] as const;
+
+type DepartmentSlug = (typeof departmentTabs)[number]["slug"];
 
 const departmentContent: Record<
-  DepartmentTab,
+  DepartmentSlug,
   {
+    tabLabel: string;
     title: string;
     logo: string;
-    facultyMembers: { name: string; role: string; photo: string }[];
+    facultyMembers: { slug: string; name: string; role: string; photo: string }[];
   }
 > = {
-  IAS: {
+  ias: {
+    tabLabel: "IAS",
     title: "INSTITUTE OF ARTS,\nSCIENCES ACADEMIC\nSTAFF",
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Atom_icon.svg/512px-Atom_icon.svg.png",
     facultyMembers: [
       {
+        slug: "gracia-t-canlas",
         name: "Gracia T. Canlas LPT, MAEd",
         role: "FULL-TIME FACULTY",
         photo:
           "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80",
       },
       {
+        slug: "michael-r-dela-cruz",
         name: "Michael R. Dela Cruz, MSc",
         role: "PROGRAM COORDINATOR",
         photo:
@@ -43,17 +54,20 @@ const departmentContent: Record<
       },
     ],
   },
-  IBCE: {
+  ibce: {
+    tabLabel: "IBCE",
     title: "INSTITUTE OF BUSINESS\nAND COMMUNITY EDUCATION\nSTAFF",
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/OOjs_UI_icon_userGroup-ltr-progressive.svg/512px-OOjs_UI_icon_userGroup-ltr-progressive.svg.png",
     facultyMembers: [
       {
+        slug: "angela-p-navarro",
         name: "Angela P. Navarro, MBA",
         role: "FULL-TIME FACULTY",
         photo:
           "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=600&q=80",
       },
       {
+        slug: "rosemarie-l-santos",
         name: "Rosemarie L. Santos, MAEd",
         role: "DEPARTMENT CHAIR",
         photo:
@@ -61,17 +75,20 @@ const departmentContent: Record<
       },
     ],
   },
-  IHTM: {
+  ihtm: {
+    tabLabel: "IHTM",
     title: "INSTITUTE OF HOSPITALITY,\nTOURISM AND MANAGEMENT\nSTAFF",
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Globe_icon-icons.com_52837.png/512px-Globe_icon-icons.com_52837.png",
     facultyMembers: [
       {
+        slug: "patricia-m-flores",
         name: "Patricia M. Flores, MHM",
         role: "FULL-TIME FACULTY",
         photo:
           "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
       },
       {
+        slug: "leonard-g-ramos",
         name: "Leonard G. Ramos, MBA",
         role: "PRACTICUM COORDINATOR",
         photo:
@@ -79,17 +96,20 @@ const departmentContent: Record<
       },
     ],
   },
-  ITE: {
+  ite: {
+    tabLabel: "ITE",
     title: "INSTITUTE OF TECHNOLOGY\nEDUCATION ACADEMIC\nSTAFF",
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Icon_gear.svg/512px-Icon_gear.svg.png",
     facultyMembers: [
       {
+        slug: "john-r-dela-cruz",
         name: "John R. Dela Cruz, MIT",
         role: "FULL-TIME FACULTY",
         photo:
           "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80",
       },
       {
+        slug: "andrea-p-navarro",
         name: "Andrea P. Navarro, MA Science",
         role: "LABORATORY INSTRUCTOR",
         photo:
@@ -99,12 +119,18 @@ const departmentContent: Record<
   },
 };
 
-export default function FacultiesScreen() {
+export default function FacultyDepartmentScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { slug } = useLocalSearchParams<{ slug?: string | string[] }>();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeDepartment, setActiveDepartment] = useState<DepartmentTab>("IAS");
-  const activeContent = departmentContent[activeDepartment];
+
+  const resolvedSlug = Array.isArray(slug) ? slug[0] : slug;
+  const department =
+    resolvedSlug && resolvedSlug in departmentContent
+      ? departmentContent[resolvedSlug as DepartmentSlug]
+      : departmentContent.ias;
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
@@ -127,12 +153,12 @@ export default function FacultiesScreen() {
 
         <View style={styles.departmentNav}>
           <View style={styles.departmentNavLine} />
-          {departmentTabs.map((department, index) => (
+          {departmentTabs.map((tab) => (
             <Pressable
-              key={department}
+              key={tab.slug}
               accessibilityRole="button"
-              accessibilityLabel={`Show ${department} faculty`}
-              onPress={() => setActiveDepartment(department)}
+              accessibilityLabel={`Show ${tab.label} faculty`}
+              onPress={() => router.push(`/academic/faculties/${tab.slug}`)}
               style={({ pressed }) => [
                 styles.departmentNavItem,
                 pressed && styles.departmentNavItemPressed,
@@ -141,13 +167,13 @@ export default function FacultiesScreen() {
               <Text
                 style={[
                   styles.departmentNavText,
-                  activeDepartment === department &&
+                  department.tabLabel === tab.label &&
                     styles.departmentNavTextActive,
                 ]}
               >
-                {department}
+                {tab.label}
               </Text>
-              {activeDepartment === department ? (
+              {department.tabLabel === tab.label ? (
                 <View style={styles.departmentNavUnderline} />
               ) : null}
             </Pressable>
@@ -157,17 +183,28 @@ export default function FacultiesScreen() {
         <View style={styles.instituteHero}>
           <View style={styles.logoShell}>
             <Image
-              source={{ uri: activeContent.logo }}
+              source={{ uri: department.logo }}
               style={styles.logoImage}
               contentFit="contain"
             />
           </View>
-          <Text style={styles.instituteTitle}>{activeContent.title}</Text>
+          <Text style={styles.instituteTitle}>{department.title}</Text>
         </View>
 
         <View style={styles.grid}>
-          {activeContent.facultyMembers.map((faculty) => (
-            <View key={faculty.name} style={styles.card}>
+          {department.facultyMembers.map((faculty) => (
+            <Pressable
+              key={faculty.slug}
+              accessibilityRole="button"
+              accessibilityLabel={`Open ${faculty.name}`}
+              onPress={() =>
+                router.push(`/academic/faculties/${resolvedSlug ?? "ias"}/${faculty.slug}`)
+              }
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
+            >
               <Image
                 source={{ uri: faculty.photo }}
                 style={styles.facultyPhoto}
@@ -175,7 +212,7 @@ export default function FacultiesScreen() {
               />
               <Text style={styles.name}>{faculty.name}</Text>
               <Text style={styles.role}>{faculty.role}</Text>
-            </View>
+            </Pressable>
           ))}
         </View>
 
@@ -304,6 +341,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     alignItems: "center",
     gap: 8,
+  },
+  cardPressed: {
+    opacity: 0.85,
   },
   facultyPhoto: {
     width: 126,

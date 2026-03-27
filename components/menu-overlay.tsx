@@ -105,7 +105,7 @@ const academicGroups: AcademicGroup[] = [
     key: "faculty",
     label: "FACULTY",
     type: "link",
-    route: "/academic/faculties",
+    route: "/academic/faculties/ias",
   },
   {
     key: "special-programs",
