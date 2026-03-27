@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
@@ -12,6 +13,7 @@ import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AnimatedIconShift } from "@/components/animated-icon-shift";
+import { landingSections, posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors } = AppTheme;
@@ -32,55 +34,9 @@ type LandingSection = {
   variant: LandingVariant;
   image: string;
   sectionKey?: string;
+  postSlug?: string;
+  relatedSlugs?: string[];
 };
-
-const landingSections: LandingSection[] = [
-  {
-    key: "global-arena",
-    title: "GWC IN THE GLOBAL ARENA",
-    subtitle:
-      "Providing students, faculty, and staff with insights and opportunities from partners across the globe.",
-    headline:
-      "DAAD Hosts Info Session at GWC for International Academic Exchange",
-    variant: "landing-white",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    key: "community",
-    title: "GWC IN THE COMMUNITY",
-    subtitle:
-      "Student life, organizations, and collaboration spaces that keep the GWC family connected.",
-    headline: "Student Council Launches Campus-Wide Service Drive",
-    variant: "landing-gray",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    key: "events",
-    title: "EVENTS",
-    subtitle: "Schedules, registration, and on-campus happenings.",
-    variant: "landing-white",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    key: "perspective",
-    title: "Perspective",
-    subtitle: "Voices, opinions, and stories from the GWC family.",
-    variant: "landing-blue",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-  },
-  {
-    key: "careers",
-    title: "Careers",
-    subtitle: "Opportunities, internships, and pathways after GWC.",
-    variant: "landing-white",
-    image:
-      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=80",
-  },
-];
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -185,9 +141,12 @@ function SectionCard({
   headline,
   variant,
   image,
+  postSlug,
+  relatedSlugs,
   key: _deprecatedKey,
   sectionKey,
 }: SectionCardProps & { sectionKey: string; key?: string }) {
+  const router = useRouter();
   const textColor =
     variant === "landing-red"
       ? colors.danger
@@ -222,6 +181,9 @@ function SectionCard({
   }
 
   if (isFeature) {
+    const relatedPosts =
+      relatedSlugs?.map((slug) => posts[slug]).filter(Boolean) ?? [];
+
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
         <Text style={stylesFeature.h1}>{title}</Text>
@@ -235,6 +197,7 @@ function SectionCard({
           <Text style={stylesFeature.paragraph}>{subtitle}</Text>
           <Pressable
             accessibilityRole="button"
+            onPress={() => postSlug && router.push(`/post/${postSlug}`)}
             // @ts-ignore hovered is web-only; pressed covers mobile
             style={({ hovered, pressed }) => [
               stylesFeature.readMore,
@@ -267,64 +230,40 @@ function SectionCard({
 
           <View style={stylesFeature.moreStories}>
             <Text style={stylesFeature.h4}>More Stories:</Text>
-            <Pressable
-              // @ts-ignore hovered is web-only; pressed covers mobile
-              style={({ hovered, pressed }) => [
-                stylesFeature.storyRow,
-                (hovered || pressed) && stylesFeature.storyRowActive,
-              ]}
-            >
-              {({ hovered, pressed }) => (
-                <>
-                  <View style={stylesFeature.storyCard}>
-                    <Image
-                      source={{ uri: image }}
-                      style={stylesFeature.storyThumb}
-                      contentFit="cover"
-                    />
-                  </View>
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={[
-                      stylesFeature.storyTitle,
-                      (hovered || pressed) && stylesFeature.storyTitleActive,
-                    ]}
-                  >
-                    Student Delegates Join ASEAN Youth Forum
-                  </Text>
-                </>
-              )}
-            </Pressable>
-            <Pressable
-              // @ts-ignore hovered is web-only; pressed covers mobile
-              style={({ hovered, pressed }) => [
-                stylesFeature.storyRow,
-                (hovered || pressed) && stylesFeature.storyRowActive,
-              ]}
-            >
-              {({ hovered, pressed }) => (
-                <>
-                  <View style={stylesFeature.storyCard}>
-                    <Image
-                      source={{ uri: image }}
-                      style={stylesFeature.storyThumb}
-                      contentFit="cover"
-                    />
-                  </View>
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={[
-                      stylesFeature.storyTitle,
-                      (hovered || pressed) && stylesFeature.storyTitleActive,
-                    ]}
-                  >
-                    New Research Hub Opens for Engineering Cohort
-                  </Text>
-                </>
-              )}
-            </Pressable>
+            {relatedPosts.map((story) => (
+              <Pressable
+                key={story.slug}
+                accessibilityRole="button"
+                onPress={() => router.push(`/post/${story.slug}`)}
+                // @ts-ignore hovered is web-only; pressed covers mobile
+                style={({ hovered, pressed }) => [
+                  stylesFeature.storyRow,
+                  (hovered || pressed) && stylesFeature.storyRowActive,
+                ]}
+              >
+                {({ hovered, pressed }) => (
+                  <>
+                    <View style={stylesFeature.storyCard}>
+                      <Image
+                        source={{ uri: story.image }}
+                        style={stylesFeature.storyThumb}
+                        contentFit="cover"
+                      />
+                    </View>
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={[
+                        stylesFeature.storyTitle,
+                        (hovered || pressed) && stylesFeature.storyTitleActive,
+                      ]}
+                    >
+                      {story.title}
+                    </Text>
+                  </>
+                )}
+              </Pressable>
+            ))}
           </View>
         </View>
       </View>
@@ -353,6 +292,7 @@ function SectionCard({
           </Text>
           <Pressable
             accessibilityRole="button"
+            onPress={() => postSlug && router.push(`/post/${postSlug}`)}
             // @ts-ignore hovered is web-only; pressed covers mobile
             style={({ hovered, pressed }) => [
               stylesPerspective.readMore,
