@@ -354,8 +354,8 @@ const styles = StyleSheet.create({
   },
   name: {
     color: colors.primary,
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 20,
+    lineHeight: 26,
     fontFamily: FontFamilies.accent,
     textAlign: "center",
   },
