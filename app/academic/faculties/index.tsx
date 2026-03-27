@@ -1,6 +1,6 @@
-import { FontAwesome5 } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -12,41 +12,99 @@ import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
-const { colors, spacing, typography } = AppTheme;
-
-const facultyMembers = [
-  {
-    name: "Prof. Maria L. Santos, MAEd",
-    department: "Teacher Education",
-    expertise: "Curriculum Development and Classroom Assessment",
-    icon: "chalkboard-teacher" as const,
-  },
-  {
-    name: "Prof. John R. Dela Cruz, MIT",
-    department: "Information Technology",
-    expertise: "Web Systems and Database Management",
-    icon: "laptop-code" as const,
-  },
-  {
-    name: "Prof. Angela P. Navarro, MBA",
-    department: "Business Administration",
-    expertise: "Marketing Strategy and Entrepreneurship",
-    icon: "briefcase" as const,
-  },
-  {
-    name: "Prof. Carlo M. Reyes, MSc Criminology",
-    department: "Criminology",
-    expertise: "Criminal Investigation and Community Safety",
-    icon: "balance-scale" as const,
-  },
-];
+const { colors, spacing } = AppTheme;
 
 const departmentTabs = ["IAS", "IBCE", "IHTM", "ITE"] as const;
+type DepartmentTab = (typeof departmentTabs)[number];
+
+const departmentContent: Record<
+  DepartmentTab,
+  {
+    title: string;
+    logo: string;
+    facultyMembers: { name: string; role: string; photo: string }[];
+  }
+> = {
+  IAS: {
+    title: "INSTITUTE OF ARTS,\nSCIENCES ACADEMIC\nSTAFF",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Atom_icon.svg/512px-Atom_icon.svg.png",
+    facultyMembers: [
+      {
+        name: "Gracia T. Canlas LPT, MAEd",
+        role: "FULL-TIME FACULTY",
+        photo:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        name: "Michael R. Dela Cruz, MSc",
+        role: "PROGRAM COORDINATOR",
+        photo:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+  },
+  IBCE: {
+    title: "INSTITUTE OF BUSINESS\nAND COMMUNITY EDUCATION\nSTAFF",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/OOjs_UI_icon_userGroup-ltr-progressive.svg/512px-OOjs_UI_icon_userGroup-ltr-progressive.svg.png",
+    facultyMembers: [
+      {
+        name: "Angela P. Navarro, MBA",
+        role: "FULL-TIME FACULTY",
+        photo:
+          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        name: "Rosemarie L. Santos, MAEd",
+        role: "DEPARTMENT CHAIR",
+        photo:
+          "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+  },
+  IHTM: {
+    title: "INSTITUTE OF HOSPITALITY,\nTOURISM AND MANAGEMENT\nSTAFF",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Globe_icon-icons.com_52837.png/512px-Globe_icon-icons.com_52837.png",
+    facultyMembers: [
+      {
+        name: "Patricia M. Flores, MHM",
+        role: "FULL-TIME FACULTY",
+        photo:
+          "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        name: "Leonard G. Ramos, MBA",
+        role: "PRACTICUM COORDINATOR",
+        photo:
+          "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+  },
+  ITE: {
+    title: "INSTITUTE OF TECHNOLOGY\nEDUCATION ACADEMIC\nSTAFF",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Icon_gear.svg/512px-Icon_gear.svg.png",
+    facultyMembers: [
+      {
+        name: "John R. Dela Cruz, MIT",
+        role: "FULL-TIME FACULTY",
+        photo:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        name: "Andrea P. Navarro, MA Science",
+        role: "LABORATORY INSTRUCTOR",
+        photo:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+  },
+};
 
 export default function FacultiesScreen() {
   const insets = useSafeAreaInsets();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDepartment, setActiveDepartment] = useState<DepartmentTab>("IAS");
+  const activeContent = departmentContent[activeDepartment];
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
@@ -70,43 +128,53 @@ export default function FacultiesScreen() {
         <View style={styles.departmentNav}>
           <View style={styles.departmentNavLine} />
           {departmentTabs.map((department, index) => (
-            <View key={department} style={styles.departmentNavItem}>
+            <Pressable
+              key={department}
+              accessibilityRole="button"
+              accessibilityLabel={`Show ${department} faculty`}
+              onPress={() => setActiveDepartment(department)}
+              style={({ pressed }) => [
+                styles.departmentNavItem,
+                pressed && styles.departmentNavItemPressed,
+              ]}
+            >
               <Text
                 style={[
                   styles.departmentNavText,
-                  index === 0 && styles.departmentNavTextActive,
+                  activeDepartment === department &&
+                    styles.departmentNavTextActive,
                 ]}
               >
                 {department}
               </Text>
-              {index === 0 ? <View style={styles.departmentNavUnderline} /> : null}
-            </View>
+              {activeDepartment === department ? (
+                <View style={styles.departmentNavUnderline} />
+              ) : null}
+            </Pressable>
           ))}
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Faculty Directory</Text>
-          <Text style={styles.sectionText}>
-            This page uses placeholder faculty entries for the menu link.
-          </Text>
+        <View style={styles.instituteHero}>
+          <View style={styles.logoShell}>
+            <Image
+              source={{ uri: activeContent.logo }}
+              style={styles.logoImage}
+              contentFit="contain"
+            />
+          </View>
+          <Text style={styles.instituteTitle}>{activeContent.title}</Text>
         </View>
 
         <View style={styles.grid}>
-          {facultyMembers.map((faculty) => (
+          {activeContent.facultyMembers.map((faculty) => (
             <View key={faculty.name} style={styles.card}>
-              <View style={styles.cardTop}>
-                <View style={styles.iconWrap}>
-                  <FontAwesome5
-                    name={faculty.icon}
-                    size={18}
-                    color={colors.surface}
-                  />
-                </View>
-                <Text style={styles.department}>{faculty.department}</Text>
-              </View>
-
+              <Image
+                source={{ uri: faculty.photo }}
+                style={styles.facultyPhoto}
+                contentFit="cover"
+              />
               <Text style={styles.name}>{faculty.name}</Text>
-              <Text style={styles.expertise}>{faculty.expertise}</Text>
+              <Text style={styles.role}>{faculty.role}</Text>
             </View>
           ))}
         </View>
@@ -170,6 +238,9 @@ const styles = StyleSheet.create({
     position: "relative",
     zIndex: 1,
   },
+  departmentNavItemPressed: {
+    opacity: 0.8,
+  },
   departmentNavText: {
     color: colors.primary,
     fontSize: 18,
@@ -186,67 +257,74 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: "#3e3e3e",
   },
-  sectionHeader: {
+  instituteHero: {
+    alignItems: "center",
+    paddingTop: 34,
     paddingHorizontal: 24,
-    paddingTop: 28,
-    paddingBottom: 16,
-    gap: 6,
+    paddingBottom: 46,
+    backgroundColor: "#eef1f6",
   },
-  sectionTitle: {
-    color: colors.textPrimary,
-    fontSize: 28,
+  logoShell: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: colors.surface,
+    borderWidth: 6,
+    borderColor: "#6a4a4a",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+    overflow: "hidden",
+  },
+  logoImage: {
+    width: 110,
+    height: 110,
+  },
+  instituteTitle: {
+    color: colors.primary,
+    fontSize: 24,
+    lineHeight: 34,
     fontFamily: FontFamilies.headingBold,
-  },
-  sectionText: {
-    color: colors.textSecondary,
-    fontSize: typography.body,
-    lineHeight: 22,
-    fontFamily: FontFamilies.body,
+    textAlign: "center",
+    textTransform: "uppercase",
   },
   grid: {
     paddingHorizontal: 24,
     paddingBottom: 32,
-    gap: 14,
+    gap: 18,
+    backgroundColor: "#eef1f6",
   },
   card: {
-    backgroundColor: "#f7f9fc",
-    borderRadius: 18,
+    backgroundColor: colors.surface,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 18,
-    gap: 10,
-  },
-  cardTop: {
-    flexDirection: "row",
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 16,
     alignItems: "center",
-    gap: 10,
+    gap: 8,
   },
-  iconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  department: {
-    color: colors.primary,
-    fontSize: 13,
-    fontFamily: FontFamilies.accentBold,
-    textTransform: "uppercase",
-    letterSpacing: 0.7,
-    flex: 1,
+  facultyPhoto: {
+    width: 126,
+    height: 126,
+    borderRadius: 63,
+    marginBottom: 10,
+    backgroundColor: "#cdd5df",
   },
   name: {
-    color: colors.textPrimary,
-    fontSize: 20,
-    lineHeight: 26,
-    fontFamily: FontFamilies.headingBold,
+    color: "#c21f2f",
+    fontSize: 16,
+    lineHeight: 22,
+    fontFamily: FontFamilies.accent,
+    textAlign: "center",
   },
-  expertise: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 21,
-    fontFamily: FontFamilies.body,
+  role: {
+    color: "#555555",
+    fontSize: 12,
+    lineHeight: 16,
+    fontFamily: FontFamilies.bodySemi,
+    textAlign: "center",
+    textTransform: "uppercase",
   },
 });
