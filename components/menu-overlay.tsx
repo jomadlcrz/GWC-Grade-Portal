@@ -93,7 +93,8 @@ const academicGroups: AcademicGroup[] = [
       },
       {
         label: "Science, Technology, Engineering and Mathematics (STEM)",
-        route: "/academic/strands/science-technology-engineering-and-mathematics",
+        route:
+          "/academic/strands/science-technology-engineering-and-mathematics",
       },
       {
         label: "Technical-Vocational-Livelihood (TVL)",
@@ -114,8 +115,7 @@ const academicGroups: AcademicGroup[] = [
     items: [
       {
         label: "Professional Education Unit Earner (PEUE)",
-        route:
-          "/academic/special-programs/professional-education-unit-earner",
+        route: "/academic/special-programs/professional-education-unit-earner",
       },
     ],
   },
@@ -223,12 +223,30 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                           // @ts-ignore hovered is web-only; pressed covers mobile
                           style={({ hovered, pressed }) => [
                             styles.groupTrigger,
+                            group.type === "accordion" &&
+                              openAcademicGroup === group.key &&
+                              styles.groupTriggerActive,
                             (hovered || pressed) && styles.groupTriggerHover,
                           ]}
                         >
-                          <Text style={styles.groupTitle}>{group.label}</Text>
+                          <Text
+                            style={[
+                              styles.groupTitle,
+                              group.type === "accordion" &&
+                                openAcademicGroup === group.key &&
+                                styles.groupTitleActive,
+                            ]}
+                          >
+                            {group.label}
+                          </Text>
                           {group.type === "link" ? null : (
-                            <Text style={styles.groupIndicator}>
+                            <Text
+                              style={[
+                                styles.groupIndicator,
+                                openAcademicGroup === group.key &&
+                                  styles.groupIndicatorActive,
+                              ]}
+                            >
                               {openAcademicGroup === group.key ? "-" : "+"}
                             </Text>
                           )}
@@ -252,7 +270,12 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                                     styles.groupItemRowHover,
                                 ]}
                               >
-                                <Text style={[styles.groupItem, styles.groupItemLink]}>
+                                <Text
+                                  style={[
+                                    styles.groupItem,
+                                    styles.groupItemLink,
+                                  ]}
+                                >
                                   - {entry.label}
                                 </Text>
                               </Pressable>
@@ -312,7 +335,7 @@ const styles = StyleSheet.create({
   menuItemActive: {
     alignSelf: "flex-start",
     backgroundColor: colors.surface,
-    borderBottomColor: colors.primary,
+    borderBottomColor: "transparent",
     borderRadius: 0,
   },
   menuText: {
@@ -350,6 +373,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: colors.primary,
   },
+  groupTriggerActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
+  },
   groupTitle: {
     color: "#f7f7fa",
     fontSize: 18,
@@ -358,12 +385,18 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
     textTransform: "uppercase",
   },
+  groupTitleActive: {
+    color: "#f7f7fa",
+  },
   groupIndicator: {
     color: "#f7f7fa",
     fontSize: 22,
     lineHeight: 22,
     fontFamily: FontFamilies.headingBold,
     fontWeight: "800",
+  },
+  groupIndicatorActive: {
+    color: "#f7f7fa",
   },
   groupItem: {
     color: "#d8dce5",
