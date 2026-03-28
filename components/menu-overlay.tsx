@@ -73,12 +73,8 @@ const academicGroups: AcademicGroup[] = [
         route: "/academic/programs/associate-in-computer-science",
       },
       {
-        label: "Bachelor of Science in Business Administration (BSBA)",
-        route:
-          "/academic/programs/bachelor-of-science-in-business-administration",
-      },
-      {
-        label: "Major in Marketing Management",
+        label:
+          "Bachelor of Science in Business Administration (BSBA) - Major in Marketing Management",
         route: "/academic/programs/major-in-marketing-management",
       },
       {
