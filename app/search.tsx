@@ -152,7 +152,7 @@ function TablePanel({
               &quot;{searchedQuery}&quot;
             </Text>
 
-            {results.map((result) => (
+            {results.map((result, index) => (
               <View key={result.id} style={styles.resultCard}>
                 <View style={styles.resultImageWrapper}>
                   <Image
@@ -209,6 +209,10 @@ function TablePanel({
                     )}
                   </Pressable>
                 </View>
+
+                {results.length >= 2 && index < results.length - 1 ? (
+                  <View style={styles.resultSeparator} />
+                ) : null}
               </View>
             ))}
           </View>
@@ -484,10 +488,12 @@ const styles = StyleSheet.create({
   },
   resultFooter: {
     marginTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: spacing.sm,
     alignItems: "flex-end",
+  },
+  resultSeparator: {
+    marginTop: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   resultReadMoreRow: {
     flexDirection: "row",
