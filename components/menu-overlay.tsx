@@ -1,6 +1,14 @@
 import { type Href, useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
 import { OverlayHeader } from "./overlay-header";
@@ -9,6 +17,11 @@ import { OverlayShell } from "./overlay-shell";
 type MenuOverlayProps = {
   visible: boolean;
   onClose: () => void;
+};
+
+type AnimatedUnderlineProps = {
+  active: boolean;
+  bottom?: number;
 };
 
 const { colors, spacing } = AppTheme;
@@ -121,6 +134,58 @@ const academicGroups: AcademicGroup[] = [
   },
 ];
 
+function AnimatedUnderline({ active, bottom = 0 }: AnimatedUnderlineProps) {
+  const [width, setWidth] = useState(0);
+  const progress = useRef(new Animated.Value(active ? 1 : 0)).current;
+  const direction = useRef(new Animated.Value(active ? -1 : 1)).current;
+
+  useEffect(() => {
+    direction.setValue(active ? -1 : 1);
+
+    Animated.timing(progress, {
+      toValue: active ? 1 : 0,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [active, direction, progress]);
+
+  const translateX =
+    width > 0
+      ? Animated.multiply(
+          Animated.multiply(Animated.subtract(1, progress), width / 2),
+          direction,
+        )
+      : 0;
+
+  return (
+    <View
+      pointerEvents="none"
+      style={styles.underlineTrack}
+      onLayout={({ nativeEvent }) => {
+        const nextWidth = Math.round(nativeEvent.layout.width);
+
+        if (nextWidth !== width) {
+          setWidth(nextWidth);
+        }
+      }}
+    >
+      {width > 0 ? (
+        <Animated.View
+          style={[
+            styles.animatedUnderline,
+            {
+              bottom,
+              width,
+              transform: [{ translateX }, { scaleX: progress }],
+            },
+          ]}
+        />
+      ) : null}
+    </View>
+  );
+}
+
 export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
   const router = useRouter();
   const [isAcademicsOpen, setIsAcademicsOpen] = useState(false);
@@ -192,17 +257,26 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                     isAcademicsOpen &&
                       !openAcademicGroup &&
                       styles.menuItemActive,
-                    (hovered || pressed) && styles.menuItemHover,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.menuText,
-                      isAcademicsOpen && styles.menuTextActive,
-                    ]}
-                  >
-                    {item.label}
-                  </Text>
+                  {({ hovered, pressed }) => (
+                    <>
+                      <Text
+                        style={[
+                          styles.menuText,
+                          isAcademicsOpen && styles.menuTextActive,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                      <AnimatedUnderline
+                        active={
+                          (isAcademicsOpen && openAcademicGroup !== "programs") ||
+                          (!isAcademicsOpen && (hovered || pressed))
+                        }
+                      />
+                    </>
+                  )}
                 </Pressable>
 
                 {isAcademicsOpen ? (
@@ -229,29 +303,43 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                             group.type === "accordion" &&
                               openAcademicGroup === group.key &&
                               styles.groupTriggerActive,
-                            (hovered || pressed) && styles.groupTriggerHover,
                           ]}
                         >
-                          <Text
-                            style={[
-                              styles.groupTitle,
-                              group.type === "accordion" &&
-                                openAcademicGroup === group.key &&
-                                styles.groupTitleActive,
-                            ]}
-                          >
-                            {group.label}
-                          </Text>
-                          {group.type === "link" ? null : (
-                            <Text
-                              style={[
-                                styles.groupIndicator,
-                                openAcademicGroup === group.key &&
-                                  styles.groupIndicatorActive,
-                              ]}
-                            >
-                              {openAcademicGroup === group.key ? "-" : "+"}
-                            </Text>
+                          {({ hovered, pressed }) => (
+                            <>
+                              <Text
+                                style={[
+                                  styles.groupTitle,
+                                  group.type === "accordion" &&
+                                    openAcademicGroup === group.key &&
+                                    styles.groupTitleActive,
+                                ]}
+                              >
+                                {group.label}
+                              </Text>
+                              {group.type === "link" ? null : (
+                                <Text
+                                  style={[
+                                    styles.groupIndicator,
+                                    openAcademicGroup === group.key &&
+                                      styles.groupIndicatorActive,
+                                  ]}
+                                >
+                                  {openAcademicGroup === group.key ? "-" : "+"}
+                                </Text>
+                              )}
+                              <AnimatedUnderline
+                                active={
+                                  (group.key === "programs" &&
+                                    openAcademicGroup === "programs") ||
+                                  (group.type === "accordion" &&
+                                    openAcademicGroup === group.key &&
+                                    group.key !== "programs") ||
+                                  hovered ||
+                                  pressed
+                                }
+                              />
+                            </>
                           )}
                         </Pressable>
 
@@ -269,18 +357,23 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                                 // @ts-ignore hovered is web-only; pressed covers mobile
                                 style={({ hovered, pressed }) => [
                                   styles.groupItemRow,
-                                  (hovered || pressed) &&
-                                    styles.groupItemRowHover,
                                 ]}
                               >
-                                <Text
-                                  style={[
-                                    styles.groupItem,
-                                    styles.groupItemLink,
-                                  ]}
-                                >
-                                  {entry.label}
-                                </Text>
+                                {({ hovered, pressed }) => (
+                                  <>
+                                    <Text
+                                      style={[
+                                        styles.groupItem,
+                                        styles.groupItemLink,
+                                      ]}
+                                    >
+                                      {entry.label}
+                                    </Text>
+                                    <AnimatedUnderline
+                                      active={hovered || pressed}
+                                    />
+                                  </>
+                                )}
                               </Pressable>
                             ))
                           : null}
@@ -299,12 +392,14 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
               accessibilityLabel={item.label}
               onPress={onClose}
               // @ts-ignore hovered is web-only; pressed covers mobile
-              style={({ hovered, pressed }) => [
-                styles.menuItem,
-                (hovered || pressed) && styles.menuItemHover,
-              ]}
+              style={({ hovered, pressed }) => [styles.menuItem]}
             >
-              <Text style={styles.menuText}>{item.label}</Text>
+              {({ hovered, pressed }) => (
+                <>
+                  <Text style={styles.menuText}>{item.label}</Text>
+                  <AnimatedUnderline active={hovered || pressed} />
+                </>
+              )}
             </Pressable>
           );
         })}
@@ -325,19 +420,13 @@ const styles = StyleSheet.create({
   },
   menuItem: {
     alignSelf: "flex-start",
+    position: "relative",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xs,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
     borderRadius: 10,
-  },
-  menuItemHover: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
   },
   menuItemActive: {
     alignSelf: "flex-start",
-    borderBottomColor: colors.primary,
     borderRadius: 0,
   },
   menuItemOpen: {
@@ -368,20 +457,14 @@ const styles = StyleSheet.create({
   },
   groupTrigger: {
     alignSelf: "flex-start",
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
     paddingVertical: 2,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-  },
-  groupTriggerHover: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
   },
   groupTriggerActive: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
+    alignSelf: "flex-start",
   },
   groupTitle: {
     color: "#f7f7fa",
@@ -414,14 +497,19 @@ const styles = StyleSheet.create({
   },
   groupItemRow: {
     alignSelf: "flex-start",
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-  },
-  groupItemRowHover: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
+    position: "relative",
   },
   groupItemLink: {
     color: colors.surface,
+  },
+  underlineTrack: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  animatedUnderline: {
+    position: "absolute",
+    left: 0,
+    height: 2,
+    borderRadius: 999,
+    backgroundColor: colors.primary,
   },
 });
