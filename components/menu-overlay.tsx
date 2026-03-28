@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { AppTheme, FontFamilies } from "@/constants/theme";
+import { Collapsible } from "@/components/ui/collapsible";
 import { OverlayHeader } from "./overlay-header";
 import { OverlayShell } from "./overlay-shell";
 
@@ -273,152 +274,150 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                 key={item.key}
                 style={[styles.academicsBlock, motionStyle]}
               >
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={item.label}
-                  onPress={() =>
-                    setIsAcademicsOpen((current) => {
-                      const next = !current;
+                <Collapsible
+                  open={isAcademicsOpen}
+                  onOpenChange={(nextOpen) => {
+                    setIsAcademicsOpen(nextOpen);
 
-                      if (!next) {
-                        setOpenAcademicGroup(null);
-                      }
-
-                      return next;
-                    })
-                  }
-                  // @ts-ignore hovered is web-only; pressed covers mobile
-                  style={({ hovered, pressed }) => [
-                    styles.menuItem,
-                    isAcademicsOpen && styles.menuItemOpen,
-                    isAcademicsOpen &&
-                      !openAcademicGroup &&
-                      styles.menuItemActive,
-                  ]}
-                >
-                  {({ hovered, pressed }) => (
-                    <>
-                      <Text
-                        style={[
-                          styles.menuText,
-                          isAcademicsOpen && styles.menuTextActive,
-                        ]}
-                      >
-                        {item.label}
-                      </Text>
-                      <AnimatedUnderline
-                        active={
-                          (isAcademicsOpen &&
-                            openAcademicGroup !== "programs") ||
-                          (!isAcademicsOpen && (hovered || pressed))
-                        }
-                      />
-                    </>
+                    if (!nextOpen) {
+                      setOpenAcademicGroup(null);
+                    }
+                  }}
+                  contentStyle={styles.submenu}
+                  renderTrigger={({ isOpen, toggle }) => (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={item.label}
+                      onPress={toggle}
+                      // @ts-ignore hovered is web-only; pressed covers mobile
+                      style={({ hovered, pressed }) => [
+                        styles.menuItem,
+                        isOpen && styles.menuItemOpen,
+                        isOpen && !openAcademicGroup && styles.menuItemActive,
+                      ]}
+                    >
+                      {({ hovered, pressed }) => (
+                        <>
+                          <Text
+                            style={[
+                              styles.menuText,
+                              isOpen && styles.menuTextActive,
+                            ]}
+                          >
+                            {item.label}
+                          </Text>
+                          <AnimatedUnderline
+                            active={
+                              (isOpen && openAcademicGroup !== "programs") ||
+                              (!isOpen && (hovered || pressed))
+                            }
+                          />
+                        </>
+                      )}
+                    </Pressable>
                   )}
-                </Pressable>
-
-                {isAcademicsOpen ? (
-                  <View style={styles.submenu}>
-                    {academicGroups.map((group) => (
-                      <View key={group.key} style={styles.group}>
+                >
+                  {academicGroups.map((group) => (
+                    <View key={group.key} style={styles.group}>
+                      {group.type === "link" ? (
                         <Pressable
                           accessibilityRole="button"
                           accessibilityLabel={group.label}
                           onPress={() => {
-                            if (group.type === "link") {
-                              onClose();
-                              router.push(group.route);
-                              return;
-                            }
-
-                            setOpenAcademicGroup((current) =>
-                              current === group.key ? null : group.key,
-                            );
+                            onClose();
+                            router.push(group.route);
                           }}
                           // @ts-ignore hovered is web-only; pressed covers mobile
-                          style={({ hovered, pressed }) => [
-                            styles.groupTrigger,
-                            group.type === "accordion" &&
-                              openAcademicGroup === group.key &&
-                              styles.groupTriggerActive,
-                          ]}
+                          style={({ hovered, pressed }) => [styles.groupTrigger]}
                         >
                           {({ hovered, pressed }) => (
                             <>
-                              <Text
-                                style={[
-                                  styles.groupTitle,
-                                  group.type === "accordion" &&
-                                    openAcademicGroup === group.key &&
-                                    styles.groupTitleActive,
-                                ]}
-                              >
+                              <Text style={[styles.groupTitle, styles.groupTitleActive]}>
                                 {group.label}
                               </Text>
-                              {group.type === "link" ? null : (
-                                <Text
-                                  style={[
-                                    styles.groupIndicator,
-                                    openAcademicGroup === group.key &&
-                                      styles.groupIndicatorActive,
-                                  ]}
-                                >
-                                  {openAcademicGroup === group.key ? "-" : "+"}
-                                </Text>
-                              )}
-                              <AnimatedUnderline
-                                active={
-                                  (group.key === "programs" &&
-                                    openAcademicGroup === "programs") ||
-                                  (group.type === "accordion" &&
-                                    openAcademicGroup === group.key &&
-                                    group.key !== "programs") ||
-                                  hovered ||
-                                  pressed
-                                }
-                              />
+                              <AnimatedUnderline active={hovered || pressed} />
                             </>
                           )}
                         </Pressable>
-
-                        {group.type === "accordion" &&
-                        openAcademicGroup === group.key
-                          ? group.items.map((entry: AcademicEntry) => (
-                              <Pressable
-                                key={entry.label}
-                                accessibilityRole="button"
-                                accessibilityLabel={entry.label}
-                                onPress={() => {
-                                  onClose();
-                                  router.push(entry.route);
-                                }}
-                                // @ts-ignore hovered is web-only; pressed covers mobile
-                                style={({ hovered, pressed }) => [
-                                  styles.groupItemRow,
-                                ]}
-                              >
-                                {({ hovered, pressed }) => (
-                                  <>
-                                    <Text
-                                      style={[
-                                        styles.groupItem,
-                                        styles.groupItemLink,
-                                      ]}
-                                    >
-                                      {entry.label}
-                                    </Text>
-                                    <AnimatedUnderline
-                                      active={hovered || pressed}
-                                    />
-                                  </>
-                                )}
-                              </Pressable>
-                            ))
-                          : null}
-                      </View>
-                    ))}
-                  </View>
-                ) : null}
+                      ) : (
+                        <Collapsible
+                          open={openAcademicGroup === group.key}
+                          onOpenChange={(nextOpen) => {
+                            setOpenAcademicGroup(nextOpen ? group.key : null);
+                          }}
+                          containerStyle={styles.groupCollapsible}
+                          contentStyle={styles.groupContent}
+                          renderTrigger={({ isOpen, toggle }) => (
+                            <Pressable
+                              accessibilityRole="button"
+                              accessibilityLabel={group.label}
+                              onPress={toggle}
+                              // @ts-ignore hovered is web-only; pressed covers mobile
+                              style={({ hovered, pressed }) => [
+                                styles.groupTrigger,
+                                isOpen && styles.groupTriggerActive,
+                              ]}
+                            >
+                              {({ hovered, pressed }) => (
+                                <>
+                                  <Text
+                                    style={[
+                                      styles.groupTitle,
+                                      isOpen && styles.groupTitleActive,
+                                    ]}
+                                  >
+                                    {group.label}
+                                  </Text>
+                                  <Text
+                                    style={[
+                                      styles.groupIndicator,
+                                      isOpen && styles.groupIndicatorActive,
+                                    ]}
+                                  >
+                                    {isOpen ? "-" : "+"}
+                                  </Text>
+                                  <AnimatedUnderline
+                                    active={isOpen || hovered || pressed}
+                                  />
+                                </>
+                              )}
+                            </Pressable>
+                          )}
+                        >
+                          {group.items.map((entry: AcademicEntry) => (
+                            <Pressable
+                              key={entry.label}
+                              accessibilityRole="button"
+                              accessibilityLabel={entry.label}
+                              onPress={() => {
+                                onClose();
+                                router.push(entry.route);
+                              }}
+                              // @ts-ignore hovered is web-only; pressed covers mobile
+                              style={({ hovered, pressed }) => [
+                                styles.groupItemRow,
+                              ]}
+                            >
+                              {({ hovered, pressed }) => (
+                                <>
+                                  <Text
+                                    style={[
+                                      styles.groupItem,
+                                      styles.groupItemLink,
+                                    ]}
+                                  >
+                                    {entry.label}
+                                  </Text>
+                                  <AnimatedUnderline active={hovered || pressed} />
+                                </>
+                              )}
+                            </Pressable>
+                          ))}
+                        </Collapsible>
+                      )}
+                    </View>
+                  ))}
+                </Collapsible>
               </Animated.View>
             );
           }
@@ -492,6 +491,14 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   group: {
+    gap: spacing.xs,
+  },
+  groupCollapsible: {
+    gap: spacing.xs,
+  },
+  groupContent: {
+    marginTop: 0,
+    marginLeft: 0,
     gap: spacing.xs,
   },
   groupTrigger: {
