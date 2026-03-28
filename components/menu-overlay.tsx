@@ -188,7 +188,10 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                   // @ts-ignore hovered is web-only; pressed covers mobile
                   style={({ hovered, pressed }) => [
                     styles.menuItem,
-                    isAcademicsOpen && styles.menuItemActive,
+                    isAcademicsOpen && styles.menuItemOpen,
+                    isAcademicsOpen &&
+                      !openAcademicGroup &&
+                      styles.menuItemActive,
                     (hovered || pressed) && styles.menuItemHover,
                   ]}
                 >
@@ -334,8 +337,11 @@ const styles = StyleSheet.create({
   },
   menuItemActive: {
     alignSelf: "flex-start",
+    borderBottomColor: colors.primary,
+    borderRadius: 0,
+  },
+  menuItemOpen: {
     backgroundColor: colors.surface,
-    borderBottomColor: "transparent",
     borderRadius: 0,
   },
   menuText: {
