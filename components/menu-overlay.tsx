@@ -206,6 +206,29 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
     [],
   );
 
+  const itemAnimationsRef = useRef<Animated.Value[]>([]);
+  if (!itemAnimationsRef.current.length) {
+    itemAnimationsRef.current = menuItems.map(() => new Animated.Value(0));
+  }
+  const itemAnimations = itemAnimationsRef.current;
+
+  useEffect(() => {
+    const animations = itemAnimations.map((animation) =>
+      Animated.timing(animation, {
+        toValue: visible ? 1 : 0,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    );
+
+    if (visible) {
+      Animated.stagger(40, animations).start();
+    } else {
+      Animated.parallel(animations).start();
+    }
+  }, [itemAnimations, visible]);
+
   const handleHome = () => {
     onClose();
     router.push("/");
@@ -232,10 +255,26 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
         contentContainerStyle={styles.menuList}
         showsVerticalScrollIndicator={false}
       >
-        {menuItems.map((item) => {
+        {menuItems.map((item, index) => {
+          const itemAnimation = itemAnimations[index];
+          const motionStyle = {
+            opacity: itemAnimation,
+            transform: [
+              {
+                translateY: itemAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [10, 0],
+                }),
+              },
+            ],
+          };
+
           if (item.key === "academics") {
             return (
-              <View key={item.key} style={styles.academicsBlock}>
+              <Animated.View
+                key={item.key}
+                style={[styles.academicsBlock, motionStyle]}
+              >
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={item.label}
@@ -271,7 +310,8 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                       </Text>
                       <AnimatedUnderline
                         active={
-                          (isAcademicsOpen && openAcademicGroup !== "programs") ||
+                          (isAcademicsOpen &&
+                            openAcademicGroup !== "programs") ||
                           (!isAcademicsOpen && (hovered || pressed))
                         }
                       />
@@ -381,26 +421,27 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                     ))}
                   </View>
                 ) : null}
-              </View>
+              </Animated.View>
             );
           }
 
           return (
-            <Pressable
-              key={item.key}
-              accessibilityRole="button"
-              accessibilityLabel={item.label}
-              onPress={onClose}
-              // @ts-ignore hovered is web-only; pressed covers mobile
-              style={({ hovered, pressed }) => [styles.menuItem]}
-            >
-              {({ hovered, pressed }) => (
-                <>
-                  <Text style={styles.menuText}>{item.label}</Text>
-                  <AnimatedUnderline active={hovered || pressed} />
-                </>
-              )}
-            </Pressable>
+            <Animated.View key={item.key} style={motionStyle}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={item.label}
+                onPress={onClose}
+                // @ts-ignore hovered is web-only; pressed covers mobile
+                style={({ hovered, pressed }) => [styles.menuItem]}
+              >
+                {({ hovered, pressed }) => (
+                  <>
+                    <Text style={styles.menuText}>{item.label}</Text>
+                    <AnimatedUnderline active={hovered || pressed} />
+                  </>
+                )}
+              </Pressable>
+            </Animated.View>
           );
         })}
       </ScrollView>
