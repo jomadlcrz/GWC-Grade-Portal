@@ -279,7 +279,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                                     styles.groupItemLink,
                                   ]}
                                 >
-                                  - {entry.label}
+                                  {entry.label}
                                 </Text>
                               </Pressable>
                             ))
