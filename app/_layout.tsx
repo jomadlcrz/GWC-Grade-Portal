@@ -17,11 +17,8 @@ import {
 } from "@expo-google-fonts/open-sans";
 import { Image as ExpoImage } from "expo-image";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Apply once so every Expo Image uses memory+disk caching by default
@@ -31,12 +28,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 };
 
 export default function RootLayout() {
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      NavigationBar.setButtonStyleAsync("dark");
-    }
-  }, []);
-
   const [openSansLoaded] = useOpenSans({
     OpenSans_400Regular,
     OpenSans_600SemiBold,
