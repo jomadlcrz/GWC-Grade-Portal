@@ -15,6 +15,13 @@ import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors, spacing } = AppTheme;
 
+type FacultyProfile = {
+  name: string;
+  role: string;
+  bio: string;
+  photo: string;
+};
+
 const facultyContent = {
   ias: {
     "gracia-t-canlas": {
@@ -80,9 +87,28 @@ const facultyContent = {
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
     },
   },
-} as const;
+} satisfies Record<string, Record<string, FacultyProfile>>;
 
 type DepartmentKey = keyof typeof facultyContent;
+
+function getFacultyProfile(
+  department?: string,
+  facultySlug?: string,
+): FacultyProfile | null {
+  if (!department || !facultySlug || !(department in facultyContent)) {
+    return null;
+  }
+
+  const departmentProfiles = facultyContent[department as DepartmentKey];
+
+  if (!(facultySlug in departmentProfiles)) {
+    return null;
+  }
+
+  return departmentProfiles[
+    facultySlug as keyof typeof departmentProfiles
+  ];
+}
 
 export default function FacultyDetailScreen() {
   const insets = useSafeAreaInsets();
@@ -99,15 +125,7 @@ export default function FacultyDetailScreen() {
     : department;
   const resolvedFaculty = Array.isArray(faculty) ? faculty[0] : faculty;
 
-  const facultyProfile =
-    resolvedDepartment &&
-    resolvedDepartment in facultyContent &&
-    resolvedFaculty &&
-    resolvedFaculty in facultyContent[resolvedDepartment as DepartmentKey]
-      ? facultyContent[resolvedDepartment as DepartmentKey][
-          resolvedFaculty as keyof (typeof facultyContent)[DepartmentKey]
-        ]
-      : null;
+  const facultyProfile = getFacultyProfile(resolvedDepartment, resolvedFaculty);
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>

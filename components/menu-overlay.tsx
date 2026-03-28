@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -17,7 +17,7 @@ const ACCENT = colors.primary;
 
 type AcademicEntry = {
   label: string;
-  route: string;
+  route: Href;
 };
 
 type AcademicAccordionGroup = {
@@ -31,7 +31,7 @@ type AcademicLinkGroup = {
   key: string;
   label: string;
   type: "link";
-  route: string;
+  route: Href;
 };
 
 type AcademicGroup = AcademicAccordionGroup | AcademicLinkGroup;

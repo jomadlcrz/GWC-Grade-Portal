@@ -14,6 +14,21 @@ import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors, spacing } = AppTheme;
 
+type ProgramLeadParagraph = {
+  before: string;
+  bold: string;
+  after: string;
+};
+
+type ProgramBodyParagraph = {
+  text: string;
+};
+
+type ProgramDetails = {
+  title: string;
+  paragraphs?: readonly [ProgramLeadParagraph, ...ProgramBodyParagraph[]];
+};
+
 const programContent = {
   "bachelor-of-science-in-criminology": {
     title: "BACHELOR OF SCIENCE IN CRIMINOLOGY",
@@ -57,7 +72,7 @@ const programContent = {
   "bachelor-of-secondary-education": {
     title: "BACHELOR OF SECONDARY EDUCATION",
   },
-} as const;
+} satisfies Record<string, ProgramDetails>;
 
 type ProgramSlug = keyof typeof programContent;
 
@@ -68,10 +83,15 @@ export default function ProgramDetailScreen() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const resolvedSlug = Array.isArray(slug) ? slug[0] : slug;
-  const program =
+  const program: ProgramDetails | null =
     resolvedSlug && resolvedSlug in programContent
       ? programContent[resolvedSlug as ProgramSlug]
       : null;
+  const paragraphs = program?.paragraphs;
+  const leadParagraph = paragraphs?.[0];
+  const bodyParagraphs = paragraphs
+    ? (paragraphs.slice(1) as ProgramBodyParagraph[])
+    : [];
 
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
@@ -98,17 +118,17 @@ export default function ProgramDetailScreen() {
         <View style={styles.body}>
           <View style={styles.contentCard}>
             {program ? (
-              "paragraphs" in program ? (
+              paragraphs && leadParagraph ? (
                 <>
                 <Text style={styles.paragraph}>
-                  {program.paragraphs[0].before}
+                  {leadParagraph.before}
                   <Text style={styles.paragraphBold}>
-                    {program.paragraphs[0].bold}
+                    {leadParagraph.bold}
                   </Text>
-                  {program.paragraphs[0].after}
+                  {leadParagraph.after}
                 </Text>
 
-                {program.paragraphs.slice(1).map((paragraph) => (
+                {bodyParagraphs.map((paragraph) => (
                   <Text key={paragraph.text} style={styles.paragraph}>
                     {paragraph.text}
                   </Text>

@@ -35,7 +35,7 @@ type LandingSection = {
   image: string;
   sectionKey?: string;
   postSlug?: string;
-  relatedSlugs?: string[];
+  relatedSlugs?: readonly string[];
 };
 
 export default function HomeScreen() {
