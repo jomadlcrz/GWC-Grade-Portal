@@ -24,7 +24,7 @@ type SearchOverlayProps = {
 };
 
 const { colors, spacing, typography } = AppTheme;
-const DARK_BG = "#0d1424";
+const DARK_BG = "#202125";
 const ACCENT = colors.primary;
 
 export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
@@ -149,7 +149,8 @@ export function SearchOverlay({ visible, onClose }: SearchOverlayProps) {
                       <FontAwesome5 name="search" size={18} color="#fff" />
                     </AnimatedIconShift>
                   </>
-                )}
+                )
+              }
             </Pressable>
           </View>
         </ScrollView>

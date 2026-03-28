@@ -12,7 +12,7 @@ type MenuOverlayProps = {
 };
 
 const { colors, spacing } = AppTheme;
-const DARK_BG = "#0d1424";
+const DARK_BG = "#202125";
 const ACCENT = colors.primary;
 
 type AcademicEntry = {
