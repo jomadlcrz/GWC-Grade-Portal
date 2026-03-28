@@ -319,14 +319,14 @@ const styles = StyleSheet.create({
   },
   menuList: {
     paddingHorizontal: spacing.lg + 8,
-    paddingVertical: spacing.xl,
+    paddingVertical: spacing.lg,
     paddingBottom: spacing.xl * 2,
-    gap: spacing.md,
+    gap: spacing.xs,
   },
   menuItem: {
     alignSelf: "flex-start",
-    paddingVertical: spacing.md + 6,
-    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xs,
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
     borderRadius: 10,
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   academicsBlock: {
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   submenu: {
     paddingLeft: spacing.md,
