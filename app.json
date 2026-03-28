@@ -21,6 +21,10 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.gwcgradeportal"
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#F6F9FF",
+      "barStyle": "dark-content"
+    },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
@@ -45,9 +49,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "7908bbb7-ad89-43f8-bd70-bb8d4f8cdde0"
+        "projectId": "1d2fcf40-012a-4525-9a8a-5f8f1e1892b4"
       }
     },
-    "owner": "gwc-grade-portal-haha"
+    "owner": "gwc-grade-portal"
   }
 }
