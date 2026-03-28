@@ -216,14 +216,16 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
     const animations = itemAnimations.map((animation) =>
       Animated.timing(animation, {
         toValue: visible ? 1 : 0,
-        duration: 240,
-        easing: Easing.out(Easing.cubic),
+        duration: visible ? 420 : 180,
+        easing: visible
+          ? Easing.bezier(0.22, 1, 0.36, 1)
+          : Easing.inOut(Easing.cubic),
         useNativeDriver: true,
       }),
     );
 
     if (visible) {
-      Animated.stagger(40, animations).start();
+      Animated.stagger(85, animations).start();
     } else {
       Animated.parallel(animations).start();
     }
@@ -263,7 +265,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
               {
                 translateY: itemAnimation.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [10, 0],
+                  outputRange: [16, 0],
                 }),
               },
             ],
