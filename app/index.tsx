@@ -1,16 +1,20 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
-  type LayoutChangeEvent,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   useWindowDimensions,
-  View,
+  View
 } from "react-native";
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+  type SharedValue,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -24,6 +28,7 @@ import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
 import { landingSections, posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const { colors } = AppTheme;
 const HERO_HEIGHT = 220;
@@ -53,112 +58,45 @@ type LandingSection = {
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { height: viewportHeight } = useWindowDimensions();
+  const reduceMotionEnabled = useReducedMotion();
   const heroHeight = HERO_HEIGHT;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [revealedSections, setRevealedSections] = useState<Record<string, boolean>>(
-    {},
-  );
-  const contentRef = useRef<View | null>(null);
-  const isScrolledRef = useRef(false);
-  const lastScrollOffsetRef = useRef(0);
-  const sectionOffsetsRef = useRef<Record<string, number>>({});
-  const scrollFrameRef = useRef<number | null>(null);
+  const scrollY = useSharedValue(0);
+  const stickyState = useSharedValue(false);
 
-  const updateRevealOffset = (key: string, nextY: number) => {
-    if (sectionOffsetsRef.current[key] === nextY) {
-      return;
-    }
-
-    sectionOffsetsRef.current[key] = nextY;
-
-    const revealLine = lastScrollOffsetRef.current + viewportHeight - 140;
-    if (nextY > revealLine) {
-      return;
-    }
-
-    setRevealedSections((current) =>
-      current[key] ? current : { ...current, [key]: true },
+  const syncStickyHeader = (nextIsScrolled: boolean) => {
+    setIsScrolled((current) =>
+      current === nextIsScrolled ? current : nextIsScrolled,
     );
   };
 
-  const handleRevealLayout = (key: string, event: LayoutChangeEvent) => {
-    updateRevealOffset(key, event.nativeEvent.layout.y);
-  };
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const offsetY = event.contentOffset.y;
+      scrollY.value = offsetY;
 
-  const measureRevealTarget = (key: string, target: View | null) => {
-    if (!target || !contentRef.current) {
-      return;
-    }
+      const shouldUseStickyStyle =
+        offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
 
-    target.measureLayout(
-      contentRef.current,
-      (_x, y) => {
-        updateRevealOffset(key, y);
-      },
-      () => {
-        return;
-      },
-    );
-  };
-
-  const handleScroll = (offsetY: number) => {
-    const shouldUseStickyStyle =
-      offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
-    const revealLine = offsetY + viewportHeight - 140;
-
-    lastScrollOffsetRef.current = offsetY;
-
-    if (shouldUseStickyStyle !== isScrolledRef.current) {
-      isScrolledRef.current = shouldUseStickyStyle;
-      setIsScrolled(shouldUseStickyStyle);
-    }
-
-    setRevealedSections((current) => {
-      let changed = false;
-      const next = { ...current };
-
-      for (const [key, top] of Object.entries(sectionOffsetsRef.current)) {
-        if (top !== undefined && top <= revealLine && !next[key]) {
-          next[key] = true;
-          changed = true;
-        }
+      if (shouldUseStickyStyle !== stickyState.value) {
+        stickyState.value = shouldUseStickyStyle;
+        scheduleOnRN(syncStickyHeader, shouldUseStickyStyle);
       }
-
-      return changed ? next : current;
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (scrollFrameRef.current !== null) {
-        cancelAnimationFrame(scrollFrameRef.current);
-      }
-    };
-  }, []);
+    },
+  });
 
   return (
     <SafeAreaView
       edges={["top", "bottom", "left", "right"]}
       style={styles.container}
     >
-      <ScrollView
+      <Animated.ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: 0 }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScroll={(event) => {
-          const offsetY = event.nativeEvent.contentOffset.y;
-
-          if (scrollFrameRef.current !== null) {
-            cancelAnimationFrame(scrollFrameRef.current);
-          }
-
-          scrollFrameRef.current = requestAnimationFrame(() => {
-            scrollFrameRef.current = null;
-            handleScroll(offsetY);
-          });
-        }}
+        onScroll={scrollHandler}
       >
         <View style={[styles.heroSection, { height: heroHeight }]}>
           <Image
@@ -170,26 +108,21 @@ export default function HomeScreen() {
           <View style={styles.heroOverlay} />
         </View>
 
-        <View ref={contentRef} style={styles.content}>
+        <View style={styles.content}>
           {landingSections.map(({ key, ...sectionProps }) => (
-            <View
-              key={key}
-              onLayout={(event) => handleRevealLayout(key, event)}
-            >
+            <View key={key}>
               <SectionCard
-                onRevealMeasure={measureRevealTarget}
-                revealed={Boolean(revealedSections[key])}
-                revealedMoreStories={Boolean(
-                  revealedSections[`${key}-more-stories`],
-                )}
+                reduceMotionEnabled={reduceMotionEnabled}
                 sectionKey={key}
+                scrollY={scrollY}
+                viewportHeight={viewportHeight}
                 {...sectionProps}
               />
             </View>
           ))}
         </View>
         <Footer bottomInset={insets.bottom} />
-      </ScrollView>
+      </Animated.ScrollView>
 
       <View style={[styles.fixedHeader, { paddingTop: insets.top }]}>
         <Header
@@ -242,10 +175,10 @@ const styles = StyleSheet.create({
 });
 
 type SectionCardProps = Omit<LandingSection, "key"> & {
-  onRevealMeasure: (key: string, target: View | null) => void;
-  revealed: boolean;
-  revealedMoreStories: boolean;
+  reduceMotionEnabled: boolean;
   sectionKey: string;
+  scrollY: SharedValue<number>;
+  viewportHeight: number;
 };
 
 function SectionCard({
@@ -254,15 +187,14 @@ function SectionCard({
   headline,
   variant,
   image,
-  onRevealMeasure,
   postSlug,
+  reduceMotionEnabled,
   relatedSlugs,
-  revealed,
-  revealedMoreStories,
   sectionKey,
+  scrollY,
+  viewportHeight,
 }: SectionCardProps) {
   const router = useRouter();
-  const moreStoriesRef = useRef<View | null>(null);
   const textColor =
     variant === "landing-red"
       ? colors.danger
@@ -289,17 +221,14 @@ function SectionCard({
           ? colors.primary
           : colors.surface;
 
-  useEffect(() => {
-    if (!isFeature) {
-      return;
-    }
-
-    onRevealMeasure(`${sectionKey}-more-stories`, moreStoriesRef.current);
-  }, [isFeature, onRevealMeasure, sectionKey]);
-
   if (isEvents) {
     return (
-      <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+      <FadeScroll
+        delay={FADE_SCROLL_DELAY}
+        reduceMotionEnabled={reduceMotionEnabled}
+        scrollY={scrollY}
+        viewportHeight={viewportHeight}
+      >
         <View style={[stylesSection.eventsBlock, { backgroundColor }]}>
           <Text style={stylesSection.eventsTitle}>EVENTS</Text>
         </View>
@@ -313,17 +242,32 @@ function SectionCard({
 
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <Text style={stylesFeature.h1}>{title}</Text>
         </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY + 90}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <Image
             source={{ uri: image }}
             style={stylesFeature.bannerFull}
             contentFit="cover"
           />
         </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 180} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY + 180}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <View style={stylesFeature.featureBody}>
             <Text style={stylesFeature.h2}>{headline ?? title}</Text>
             <Text style={stylesFeature.paragraph}>{subtitle}</Text>
@@ -360,17 +304,13 @@ function SectionCard({
               )}
             </Pressable>
 
-            <View
-              ref={moreStoriesRef}
-              style={stylesFeature.moreStories}
-              onLayout={() =>
-                onRevealMeasure(`${sectionKey}-more-stories`, moreStoriesRef.current)
-              }
-            >
+            <View style={stylesFeature.moreStories}>
                 <FadeScroll
                   delay={MORE_STORIES_DELAY}
                   direction={moreStoriesDirection}
-                  revealed={revealedMoreStories}
+                  reduceMotionEnabled={reduceMotionEnabled}
+                  scrollY={scrollY}
+                  viewportHeight={viewportHeight}
                 >
                   <Text style={stylesFeature.h4}>More Stories:</Text>
                 </FadeScroll>
@@ -381,7 +321,9 @@ function SectionCard({
                       MORE_STORIES_DELAY + (index + 1) * MORE_STORIES_STAGGER
                     }
                     direction={moreStoriesDirection}
-                    revealed={revealedMoreStories}
+                    reduceMotionEnabled={reduceMotionEnabled}
+                    scrollY={scrollY}
+                    viewportHeight={viewportHeight}
                   >
                     <Pressable
                       accessibilityRole="button"
@@ -427,17 +369,32 @@ function SectionCard({
   if (isPerspective) {
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <Text style={stylesPerspective.h1}>PERSPECTIVES + OPINIONS</Text>
         </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY + 90}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <Image
             source={{ uri: image }}
             style={stylesPerspective.bannerFull}
             contentFit="cover"
           />
         </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 180} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY + 180}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <View style={stylesPerspective.body}>
             <Text style={stylesPerspective.h2}>PLASTIC FREE ADVOCACY</Text>
             <Text style={stylesPerspective.paragraph}>
@@ -510,7 +467,12 @@ function SectionCard({
 
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+        <FadeScroll
+          delay={FADE_SCROLL_DELAY}
+          reduceMotionEnabled={reduceMotionEnabled}
+          scrollY={scrollY}
+          viewportHeight={viewportHeight}
+        >
           <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
         </FadeScroll>
         <Text style={stylesCareers.h2}>
@@ -539,14 +501,24 @@ function SectionCard({
 
   return (
     <View style={[stylesSection.card, { backgroundColor }]}>
-      <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+      <FadeScroll
+        delay={FADE_SCROLL_DELAY}
+        reduceMotionEnabled={reduceMotionEnabled}
+        scrollY={scrollY}
+        viewportHeight={viewportHeight}
+      >
         <Image
           source={{ uri: image }}
           style={stylesSection.banner}
           contentFit="cover"
         />
       </FadeScroll>
-      <FadeScroll delay={FADE_SCROLL_DELAY + 110} revealed={revealed}>
+      <FadeScroll
+        delay={FADE_SCROLL_DELAY + 110}
+        reduceMotionEnabled={reduceMotionEnabled}
+        scrollY={scrollY}
+        viewportHeight={viewportHeight}
+      >
         <View style={stylesSection.inner}>
           <View style={stylesSection.badgeRow}>
             <View

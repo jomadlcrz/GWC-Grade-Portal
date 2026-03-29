@@ -1,167 +1,174 @@
-import { type ReactNode, useEffect, useRef } from "react";
-import { AccessibilityInfo, Animated } from "react-native";
+import { type ComponentProps, type ReactNode, useEffect, useRef } from "react";
+import {
+  type LayoutChangeEvent,
+  View,
+} from "react-native";
+
+import Animated, {
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+  type SharedValue,
+} from "react-native-reanimated";
 
 type FadeScrollDirection = "up" | "down" | "left" | "right";
 
-type FadeScrollProps = {
+type FadeScrollProps = Omit<ComponentProps<typeof Animated.View>, "children" | "style"> & {
+  animateOnce?: boolean;
   children: ReactNode;
   delay?: number;
   distance?: number;
   direction?: FadeScrollDirection;
   duration?: number;
   fadeDuration?: number;
-  revealed: boolean;
+  reduceMotionEnabled?: boolean;
+  revealOffset?: number;
+  scrollY: SharedValue<number>;
+  style?: ComponentProps<typeof Animated.View>["style"];
+  viewportHeight: number;
 };
 
-function getInitialTransform(
-  direction: FadeScrollDirection,
-  distance: number,
-) {
+function getInitialOffset(direction: FadeScrollDirection, distance: number) {
   switch (direction) {
     case "down":
-      return { translateY: -distance };
+      return -distance;
     case "left":
-      return { translateX: distance };
+      return distance;
     case "right":
-      return { translateX: -distance };
+      return -distance;
     case "up":
     default:
-      return { translateY: distance };
+      return distance;
   }
 }
 
 export function FadeScroll({
+  animateOnce = true,
   children,
   delay = 0,
   distance = 32,
   direction = "up",
   duration = 520,
   fadeDuration = 420,
-  revealed,
+  reduceMotionEnabled = false,
+  revealOffset = 140,
+  scrollY,
+  style,
+  viewportHeight,
+  ...rest
 }: FadeScrollProps) {
-  const initialTransform = getInitialTransform(direction, distance);
-  const opacity = useRef(new Animated.Value(revealed ? 1 : 0)).current;
-  const translateX = useRef(
-    new Animated.Value(revealed ? 0 : (initialTransform.translateX ?? 0)),
-  ).current;
-  const translateY = useRef(
-    new Animated.Value(revealed ? 0 : (initialTransform.translateY ?? 0)),
-  ).current;
-  const hasAnimatedRef = useRef(revealed);
-  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
-  const reduceMotionRef = useRef(false);
+  const initialOffset = getInitialOffset(direction, distance);
+  const isHorizontal = direction === "left" || direction === "right";
+  const motionReduced = reduceMotionEnabled;
+  const startsVisible = motionReduced;
+  const viewRef = useRef<View>(null);
+  const hasAnimated = useSharedValue(false);
+  const absoluteTop = useSharedValue(0);
+  const elementHeight = useSharedValue(0);
+  const layoutReady = useSharedValue(startsVisible);
+  const opacity = useSharedValue(startsVisible ? 1 : 0);
+  const translate = useSharedValue(startsVisible ? 0 : initialOffset);
 
   useEffect(() => {
-    if (hasAnimatedRef.current) {
+    if (motionReduced) {
+      layoutReady.value = true;
+      hasAnimated.value = true;
+      opacity.value = 1;
+      translate.value = 0;
+    }
+  }, [hasAnimated, layoutReady, motionReduced, opacity, translate]);
+
+  const handleLayout = (_event: LayoutChangeEvent) => {
+    if (motionReduced) {
       return;
     }
 
-    const nextTransform = getInitialTransform(direction, distance);
-    translateX.setValue(nextTransform.translateX ?? 0);
-    translateY.setValue(nextTransform.translateY ?? 0);
-  }, [direction, distance, translateX, translateY]);
+    viewRef.current?.measureInWindow((_x, pageY, _width, height) => {
+      absoluteTop.value = pageY + scrollY.value;
+      elementHeight.value = height;
+      layoutReady.value = true;
+    });
+  };
 
-  useEffect(() => {
-    let isMounted = true;
+  useAnimatedReaction(
+    () => {
+      const animationsDisabled = motionReduced;
+      const revealLine = viewportHeight - revealOffset;
+      const currentAbsoluteTop = absoluteTop.value;
+      const currentElementHeight = elementHeight.value;
+      const isLayoutReady = layoutReady.value;
+      const scrollOffset = scrollY.value;
 
-    AccessibilityInfo.isReduceMotionEnabled()
-      .then((enabled) => {
-        if (!isMounted) {
-          return;
+      let shouldShow = animationsDisabled;
+
+      if (!animationsDisabled && isLayoutReady) {
+        const top = currentAbsoluteTop - scrollOffset;
+        const bottom = top + currentElementHeight;
+        const isInView = bottom >= 0 && top <= revealLine;
+
+        if (isInView) {
+          hasAnimated.value = true;
         }
 
-        reduceMotionRef.current = enabled;
-      })
-      .catch(() => {
-        reduceMotionRef.current = false;
-      });
-
-    const subscription = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged",
-      (enabled) => {
-        reduceMotionRef.current = enabled;
-      },
-    );
-
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!revealed) {
-      hasAnimatedRef.current = false;
-
-      const nextTransform = getInitialTransform(direction, distance);
-      opacity.setValue(0);
-      translateX.setValue(nextTransform.translateX ?? 0);
-      translateY.setValue(nextTransform.translateY ?? 0);
-      return;
-    }
-
-    if (hasAnimatedRef.current) {
-      return;
-    }
-
-    hasAnimatedRef.current = true;
-
-    if (reduceMotionRef.current) {
-      opacity.setValue(1);
-      translateX.setValue(0);
-      translateY.setValue(0);
-      return;
-    }
-
-    animationRef.current?.stop();
-    animationRef.current = Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: fadeDuration,
-        delay,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration,
-        delay,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration,
-        delay,
-        useNativeDriver: true,
-      }),
-    ]);
-    animationRef.current.start(({ finished }) => {
-      if (finished) {
-        opacity.setValue(1);
-        translateX.setValue(0);
-        translateY.setValue(0);
+        shouldShow = animateOnce ? hasAnimated.value || isInView : isInView;
+      } else if (animationsDisabled) {
+        hasAnimated.value = true;
       }
 
-      animationRef.current = null;
-    });
+      return {
+        animationsDisabled,
+        isLayoutReady,
+        shouldShow,
+      };
+    },
+    (current, previous) => {
+      const isInitialReaction = previous === null;
+      const layoutBecameReady =
+        !isInitialReaction && current.isLayoutReady && !previous.isLayoutReady;
+      const visibilityChanged =
+        isInitialReaction || current.shouldShow !== previous.shouldShow;
+      const motionChanged =
+        !isInitialReaction &&
+        current.animationsDisabled !== previous.animationsDisabled;
 
-    return () => {
-      animationRef.current?.stop();
-      animationRef.current = null;
+      if (layoutBecameReady || visibilityChanged || motionChanged) {
+        if (current.shouldShow) {
+          if (isInitialReaction || current.animationsDisabled) {
+            opacity.value = 1;
+            translate.value = 0;
+          } else {
+            opacity.value = withDelay(delay, withTiming(1, { duration: fadeDuration }));
+            translate.value = withDelay(delay, withTiming(0, { duration }));
+          }
+        } else if (isInitialReaction) {
+          opacity.value = 0;
+          translate.value = initialOffset;
+        } else {
+          opacity.value = withTiming(0, { duration: 180 });
+          translate.value = withTiming(initialOffset, { duration: 220 });
+        }
+      }
+    },
+  );
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: isHorizontal
+        ? [{ translateX: translate.value }]
+        : [{ translateY: translate.value }],
     };
-  }, [
-    delay,
-    direction,
-    distance,
-    duration,
-    fadeDuration,
-    opacity,
-    revealed,
-    translateX,
-    translateY,
-  ]);
+  });
 
   return (
-    <Animated.View style={{ opacity, transform: [{ translateX }, { translateY }] }}>
+    <Animated.View
+      ref={viewRef}
+      {...rest}
+      onLayout={handleLayout}
+      style={[style, animatedStyle]}
+    >
       {children}
     </Animated.View>
   );
