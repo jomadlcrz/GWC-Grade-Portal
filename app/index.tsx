@@ -448,32 +448,26 @@ function SectionCard({
         <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
           <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
         </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
-          <Text style={stylesCareers.h2}>
-            CURRENTLY NO VACANT POSITION AVAILABLE
-          </Text>
-        </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 160} revealed={revealed}>
-          <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
-        </FadeScroll>
-        <FadeScroll delay={FADE_SCROLL_DELAY + 230} revealed={revealed}>
-          <View style={stylesCareers.list}>
-            {facultyPositions.map(({ id, count, grade, salary }) => (
-              <View key={id} style={stylesCareers.card}>
-                <View style={stylesCareers.bar} />
-                <View style={stylesCareers.cardBody}>
-                  <View style={stylesCareers.countBubble}>
-                    <Text style={stylesCareers.countText}>{count}</Text>
-                  </View>
-                  <Text style={stylesCareers.title}>{id}</Text>
-                  <Text style={stylesCareers.meta}>
-                    {grade} â€“ {salary}
-                  </Text>
+        <Text style={stylesCareers.h2}>
+          CURRENTLY NO VACANT POSITION AVAILABLE
+        </Text>
+        <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
+        <View style={stylesCareers.list}>
+          {facultyPositions.map(({ id, count, grade, salary }) => (
+            <View key={id} style={stylesCareers.card}>
+              <View style={stylesCareers.bar} />
+              <View style={stylesCareers.cardBody}>
+                <View style={stylesCareers.countBubble}>
+                  <Text style={stylesCareers.countText}>{count}</Text>
                 </View>
+                <Text style={stylesCareers.title}>{id}</Text>
+                <Text style={stylesCareers.meta}>
+                  {grade} â€“ {salary}
+                </Text>
               </View>
-            ))}
-          </View>
-        </FadeScroll>
+            </View>
+          ))}
+        </View>
       </View>
     );
   }
