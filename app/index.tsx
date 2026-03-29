@@ -268,6 +268,7 @@ function SectionCard({
   const isEvents = sectionKey === "events";
   const isPerspective = sectionKey === "perspective";
   const isCareers = sectionKey === "careers";
+  const moreStoriesDirection = sectionKey === "community" ? "right" : "left";
 
   const backgroundColor = isCareers
     ? colors.pageBackground
@@ -359,7 +360,7 @@ function SectionCard({
             >
                 <FadeScroll
                   delay={MORE_STORIES_DELAY}
-                  direction="right"
+                  direction={moreStoriesDirection}
                   revealed={revealedMoreStories}
                 >
                   <Text style={stylesFeature.h4}>More Stories:</Text>
@@ -370,7 +371,7 @@ function SectionCard({
                     delay={
                       MORE_STORIES_DELAY + (index + 1) * MORE_STORIES_STAGGER
                     }
-                    direction="right"
+                    direction={moreStoriesDirection}
                     revealed={revealedMoreStories}
                   >
                     <Pressable
