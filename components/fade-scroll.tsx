@@ -40,16 +40,21 @@ export function FadeScroll({
   revealed,
 }: FadeScrollProps) {
   const initialTransform = getInitialTransform(direction, distance);
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(revealed ? 1 : 0)).current;
   const translateX = useRef(
-    new Animated.Value(initialTransform.translateX ?? 0),
+    new Animated.Value(revealed ? 0 : (initialTransform.translateX ?? 0)),
   ).current;
   const translateY = useRef(
-    new Animated.Value(initialTransform.translateY ?? 0),
+    new Animated.Value(revealed ? 0 : (initialTransform.translateY ?? 0)),
   ).current;
-  const hasAnimatedRef = useRef(false);
+  const hasAnimatedRef = useRef(revealed);
+  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
+    if (hasAnimatedRef.current) {
+      return;
+    }
+
     const nextTransform = getInitialTransform(direction, distance);
     translateX.setValue(nextTransform.translateX ?? 0);
     translateY.setValue(nextTransform.translateY ?? 0);
@@ -62,7 +67,8 @@ export function FadeScroll({
 
     hasAnimatedRef.current = true;
 
-    Animated.parallel([
+    animationRef.current?.stop();
+    animationRef.current = Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
         duration: fadeDuration,
@@ -81,7 +87,21 @@ export function FadeScroll({
         delay,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+    animationRef.current.start(({ finished }) => {
+      if (finished) {
+        opacity.setValue(1);
+        translateX.setValue(0);
+        translateY.setValue(0);
+      }
+
+      animationRef.current = null;
+    });
+
+    return () => {
+      animationRef.current?.stop();
+      animationRef.current = null;
+    };
   }, [
     delay,
     duration,
