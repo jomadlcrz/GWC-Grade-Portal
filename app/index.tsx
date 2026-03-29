@@ -1,7 +1,7 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   type LayoutChangeEvent,
@@ -31,6 +31,8 @@ const { colors } = AppTheme;
 const HERO_HEIGHT = 220;
 const HEADER_HEIGHT = 98;
 const FADE_SCROLL_DELAY = 400;
+const MORE_STORIES_DELAY = FADE_SCROLL_DELAY + 260;
+const MORE_STORIES_STAGGER = 90;
 
 type LandingVariant =
   | "landing-white"
@@ -57,17 +59,14 @@ export default function HomeScreen() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [revealedSections, setRevealedSections] = useState<
-    Record<string, boolean>
-  >({});
-  const [sectionOffsets, setSectionOffsets] = useState<Record<string, number>>(
+  const [revealedSections, setRevealedSections] = useState<Record<string, boolean>>(
     {},
   );
+  const [sectionOffsets, setSectionOffsets] = useState<Record<string, number>>({});
+  const contentRef = useRef<View | null>(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const handleSectionLayout = (key: string, event: LayoutChangeEvent) => {
-    const nextY = event.nativeEvent.layout.y;
-
+  const updateRevealOffset = (key: string, nextY: number) => {
     setSectionOffsets((current) => {
       const next =
         current[key] === nextY ? current : { ...current, [key]: nextY };
@@ -86,6 +85,26 @@ export default function HomeScreen() {
     });
   };
 
+  const handleRevealLayout = (key: string, event: LayoutChangeEvent) => {
+    updateRevealOffset(key, event.nativeEvent.layout.y);
+  };
+
+  const measureRevealTarget = (key: string, target: View | null) => {
+    if (!target || !contentRef.current) {
+      return;
+    }
+
+    target.measureLayout(
+      contentRef.current,
+      (_x, y) => {
+        updateRevealOffset(key, y);
+      },
+      () => {
+        return;
+      },
+    );
+  };
+
   const handleScroll = (offsetY: number) => {
     const shouldUseStickyStyle =
       offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
@@ -99,8 +118,7 @@ export default function HomeScreen() {
       let changed = false;
       const next = { ...current };
 
-      for (const { key } of landingSections) {
-        const top = sectionOffsets[key];
+      for (const [key, top] of Object.entries(sectionOffsets)) {
 
         if (top !== undefined && top <= revealLine && !next[key]) {
           next[key] = true;
@@ -143,14 +161,18 @@ export default function HomeScreen() {
           <View style={styles.heroOverlay} />
         </View>
 
-        <View style={styles.content}>
+        <View ref={contentRef} style={styles.content}>
           {landingSections.map(({ key, ...sectionProps }) => (
             <View
               key={key}
-              onLayout={(event) => handleSectionLayout(key, event)}
+              onLayout={(event) => handleRevealLayout(key, event)}
             >
               <SectionCard
+                onRevealMeasure={measureRevealTarget}
                 revealed={Boolean(revealedSections[key])}
+                revealedMoreStories={Boolean(
+                  revealedSections[`${key}-more-stories`],
+                )}
                 sectionKey={key}
                 {...sectionProps}
               />
@@ -211,7 +233,9 @@ const styles = StyleSheet.create({
 });
 
 type SectionCardProps = Omit<LandingSection, "key"> & {
+  onRevealMeasure: (key: string, target: View | null) => void;
   revealed: boolean;
+  revealedMoreStories: boolean;
   sectionKey: string;
 };
 
@@ -221,12 +245,15 @@ function SectionCard({
   headline,
   variant,
   image,
+  onRevealMeasure,
   postSlug,
   relatedSlugs,
   revealed,
+  revealedMoreStories,
   sectionKey,
 }: SectionCardProps) {
   const router = useRouter();
+  const moreStoriesRef = useRef<View | null>(null);
   const textColor =
     variant === "landing-red"
       ? colors.danger
@@ -251,6 +278,14 @@ function SectionCard({
         : variant === "landing-blue"
           ? colors.primary
           : colors.surface;
+
+  useEffect(() => {
+    if (!isFeature) {
+      return;
+    }
+
+    onRevealMeasure(`${sectionKey}-more-stories`, moreStoriesRef.current);
+  }, [isFeature, onRevealMeasure, sectionKey]);
 
   if (isEvents) {
     return (
@@ -315,43 +350,63 @@ function SectionCard({
               )}
             </Pressable>
 
-            <View style={stylesFeature.moreStories}>
-              <Text style={stylesFeature.h4}>More Stories:</Text>
-              {relatedPosts.map((story) => (
-                <Pressable
-                  key={story.slug}
-                  accessibilityRole="button"
-                  onPress={() => router.push(`/post/${story.slug}`)}
-                  // @ts-ignore hovered is web-only; pressed covers mobile
-                  style={({ hovered, pressed }) => [
-                    stylesFeature.storyRow,
-                    (hovered || pressed) && stylesFeature.storyRowActive,
-                  ]}
+            <View
+              ref={moreStoriesRef}
+              style={stylesFeature.moreStories}
+              onLayout={() =>
+                onRevealMeasure(`${sectionKey}-more-stories`, moreStoriesRef.current)
+              }
+            >
+                <FadeScroll
+                  delay={MORE_STORIES_DELAY}
+                  direction="right"
+                  revealed={revealedMoreStories}
                 >
-                  {({ hovered, pressed }) => (
-                    <>
-                      <View style={stylesFeature.storyCard}>
-                        <Image
-                          source={{ uri: story.image }}
-                          style={stylesFeature.storyThumb}
-                          contentFit="cover"
-                        />
-                      </View>
-                      <Text
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={[
-                          stylesFeature.storyTitle,
-                          (hovered || pressed) &&
-                            stylesFeature.storyTitleActive,
-                        ]}
-                      >
-                        {story.title}
-                      </Text>
-                    </>
-                  )}
-                </Pressable>
-              ))}
+                  <Text style={stylesFeature.h4}>More Stories:</Text>
+                </FadeScroll>
+                {relatedPosts.map((story, index) => (
+                  <FadeScroll
+                    key={story.slug}
+                    delay={
+                      MORE_STORIES_DELAY + (index + 1) * MORE_STORIES_STAGGER
+                    }
+                    direction="right"
+                    revealed={revealedMoreStories}
+                  >
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => router.push(`/post/${story.slug}`)}
+                      // @ts-ignore hovered is web-only; pressed covers mobile
+                      style={({ hovered, pressed }) => [
+                        stylesFeature.storyRow,
+                        (hovered || pressed) && stylesFeature.storyRowActive,
+                      ]}
+                    >
+                      {({ hovered, pressed }) => (
+                        <>
+                          <View style={stylesFeature.storyCard}>
+                            <Image
+                              source={{ uri: story.image }}
+                              style={stylesFeature.storyThumb}
+                              contentFit="cover"
+                            />
+                          </View>
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={[
+                              stylesFeature.storyTitle,
+                              (hovered || pressed) &&
+                                stylesFeature.storyTitleActive,
+                            ]}
+                          >
+                            {story.title}
+                          </Text>
+                        </>
+                      )}
+                    </Pressable>
+                  </FadeScroll>
+                ))}
             </View>
           </View>
         </FadeScroll>
