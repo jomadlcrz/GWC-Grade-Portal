@@ -1,24 +1,36 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRef, useState } from "react";
+import {
+  Animated,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
+import { FadeScroll } from "@/components/fade-scroll";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
-import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { landingSections, posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
 const { colors } = AppTheme;
 const HERO_HEIGHT = 220;
 const HEADER_HEIGHT = 98;
+const FADE_SCROLL_DELAY = 400;
 
 type LandingVariant =
   | "landing-white"
@@ -40,18 +52,64 @@ type LandingSection = {
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const { height: viewportHeight } = useWindowDimensions();
   const heroHeight = HERO_HEIGHT;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [revealedSections, setRevealedSections] = useState<
+    Record<string, boolean>
+  >({});
+  const [sectionOffsets, setSectionOffsets] = useState<Record<string, number>>(
+    {},
+  );
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const handleSectionLayout = (key: string, event: LayoutChangeEvent) => {
+    const nextY = event.nativeEvent.layout.y;
+
+    setSectionOffsets((current) => {
+      const next =
+        current[key] === nextY ? current : { ...current, [key]: nextY };
+
+      const revealLine = viewportHeight - 140;
+
+      if (nextY <= revealLine) {
+        setRevealedSections((revealedCurrent) =>
+          revealedCurrent[key]
+            ? revealedCurrent
+            : { ...revealedCurrent, [key]: true },
+        );
+      }
+
+      return next;
+    });
+  };
 
   const handleScroll = (offsetY: number) => {
     const shouldUseStickyStyle =
       offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
+    const revealLine = offsetY + viewportHeight - 140;
 
     if (shouldUseStickyStyle !== isScrolled) {
       setIsScrolled(shouldUseStickyStyle);
     }
+
+    setRevealedSections((current) => {
+      let changed = false;
+      const next = { ...current };
+
+      for (const { key } of landingSections) {
+        const top = sectionOffsets[key];
+
+        if (top !== undefined && top <= revealLine && !next[key]) {
+          next[key] = true;
+          changed = true;
+        }
+      }
+
+      return changed ? next : current;
+    });
   };
 
   return (
@@ -59,11 +117,21 @@ export default function HomeScreen() {
       edges={["top", "bottom", "left", "right"]}
       style={styles.container}
     >
-      <ScrollView
+      <Animated.ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: 0 }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScroll={(event) => handleScroll(event.nativeEvent.contentOffset.y)}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          {
+            useNativeDriver: true,
+            listener: (event) => {
+              const scrollEvent =
+                event as NativeSyntheticEvent<NativeScrollEvent>;
+              handleScroll(scrollEvent.nativeEvent.contentOffset.y);
+            },
+          },
+        )}
       >
         <View style={[styles.heroSection, { height: heroHeight }]}>
           <Image
@@ -77,11 +145,20 @@ export default function HomeScreen() {
 
         <View style={styles.content}>
           {landingSections.map(({ key, ...sectionProps }) => (
-            <SectionCard key={key} sectionKey={key} {...sectionProps} />
+            <View
+              key={key}
+              onLayout={(event) => handleSectionLayout(key, event)}
+            >
+              <SectionCard
+                revealed={Boolean(revealedSections[key])}
+                sectionKey={key}
+                {...sectionProps}
+              />
+            </View>
           ))}
         </View>
         <Footer bottomInset={insets.bottom} />
-      </ScrollView>
+      </Animated.ScrollView>
 
       <View style={[styles.fixedHeader, { paddingTop: insets.top }]}>
         <Header
@@ -133,7 +210,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type SectionCardProps = LandingSection;
+type SectionCardProps = Omit<LandingSection, "key"> & {
+  revealed: boolean;
+  sectionKey: string;
+};
 
 function SectionCard({
   title,
@@ -143,9 +223,9 @@ function SectionCard({
   image,
   postSlug,
   relatedSlugs,
-  key: _deprecatedKey,
+  revealed,
   sectionKey,
-}: SectionCardProps & { sectionKey: string; key?: string }) {
+}: SectionCardProps) {
   const router = useRouter();
   const textColor =
     variant === "landing-red"
@@ -174,9 +254,11 @@ function SectionCard({
 
   if (isEvents) {
     return (
-      <View style={[stylesSection.eventsBlock, { backgroundColor }]}>
-        <Text style={stylesSection.eventsTitle}>EVENTS</Text>
-      </View>
+      <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+        <View style={[stylesSection.eventsBlock, { backgroundColor }]}>
+          <Text style={stylesSection.eventsTitle}>EVENTS</Text>
+        </View>
+      </FadeScroll>
     );
   }
 
@@ -186,86 +268,93 @@ function SectionCard({
 
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <Text style={stylesFeature.h1}>{title}</Text>
-        <Image
-          source={{ uri: image }}
-          style={stylesFeature.bannerFull}
-          contentFit="cover"
-        />
-        <View style={stylesFeature.featureBody}>
-          <Text style={stylesFeature.h2}>{headline ?? title}</Text>
-          <Text style={stylesFeature.paragraph}>{subtitle}</Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => postSlug && router.push(`/post/${postSlug}`)}
-            // @ts-ignore hovered is web-only; pressed covers mobile
-            style={({ hovered, pressed }) => [
-              stylesFeature.readMore,
-              (hovered || pressed) && stylesFeature.readMoreActive,
-            ]}
-          >
-            {({ hovered, pressed }) => (
-              <>
-                <Text
-                  style={[
-                    stylesFeature.readMoreText,
-                    (hovered || pressed) && stylesFeature.readMoreTextActive,
+        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+          <Text style={stylesFeature.h1}>{title}</Text>
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
+          <Image
+            source={{ uri: image }}
+            style={stylesFeature.bannerFull}
+            contentFit="cover"
+          />
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 180} revealed={revealed}>
+          <View style={stylesFeature.featureBody}>
+            <Text style={stylesFeature.h2}>{headline ?? title}</Text>
+            <Text style={stylesFeature.paragraph}>{subtitle}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => postSlug && router.push(`/post/${postSlug}`)}
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
+                stylesFeature.readMore,
+                (hovered || pressed) && stylesFeature.readMoreActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
+                <>
+                  <Text
+                    style={[
+                      stylesFeature.readMoreText,
+                      (hovered || pressed) && stylesFeature.readMoreTextActive,
+                    ]}
+                  >
+                    Read More
+                  </Text>
+                  <AnimatedIconShift
+                    active={hovered || pressed}
+                    style={stylesFeature.readMoreIcon}
+                  >
+                    <FontAwesome5
+                      name="arrow-right"
+                      size={14}
+                      color={colors.surface}
+                    />
+                  </AnimatedIconShift>
+                </>
+              )}
+            </Pressable>
+
+            <View style={stylesFeature.moreStories}>
+              <Text style={stylesFeature.h4}>More Stories:</Text>
+              {relatedPosts.map((story) => (
+                <Pressable
+                  key={story.slug}
+                  accessibilityRole="button"
+                  onPress={() => router.push(`/post/${story.slug}`)}
+                  // @ts-ignore hovered is web-only; pressed covers mobile
+                  style={({ hovered, pressed }) => [
+                    stylesFeature.storyRow,
+                    (hovered || pressed) && stylesFeature.storyRowActive,
                   ]}
                 >
-                  Read More
-                </Text>
-                <AnimatedIconShift
-                  active={hovered || pressed}
-                  style={stylesFeature.readMoreIcon}
-                >
-                  <FontAwesome5
-                    name="arrow-right"
-                    size={14}
-                    color={colors.surface}
-                  />
-                </AnimatedIconShift>
-              </>
-            )}
-          </Pressable>
-
-          <View style={stylesFeature.moreStories}>
-            <Text style={stylesFeature.h4}>More Stories:</Text>
-            {relatedPosts.map((story) => (
-              <Pressable
-                key={story.slug}
-                accessibilityRole="button"
-                onPress={() => router.push(`/post/${story.slug}`)}
-                // @ts-ignore hovered is web-only; pressed covers mobile
-                style={({ hovered, pressed }) => [
-                  stylesFeature.storyRow,
-                  (hovered || pressed) && stylesFeature.storyRowActive,
-                ]}
-              >
-                {({ hovered, pressed }) => (
-                  <>
-                    <View style={stylesFeature.storyCard}>
-                      <Image
-                        source={{ uri: story.image }}
-                        style={stylesFeature.storyThumb}
-                        contentFit="cover"
-                      />
-                    </View>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={[
-                        stylesFeature.storyTitle,
-                        (hovered || pressed) && stylesFeature.storyTitleActive,
-                      ]}
-                    >
-                      {story.title}
-                    </Text>
-                  </>
-                )}
-              </Pressable>
-            ))}
+                  {({ hovered, pressed }) => (
+                    <>
+                      <View style={stylesFeature.storyCard}>
+                        <Image
+                          source={{ uri: story.image }}
+                          style={stylesFeature.storyThumb}
+                          contentFit="cover"
+                        />
+                      </View>
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[
+                          stylesFeature.storyTitle,
+                          (hovered || pressed) &&
+                            stylesFeature.storyTitleActive,
+                        ]}
+                      >
+                        {story.title}
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              ))}
+            </View>
           </View>
-        </View>
+        </FadeScroll>
       </View>
     );
   }
@@ -273,129 +362,160 @@ function SectionCard({
   if (isPerspective) {
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <Text style={stylesPerspective.h1}>PERSPECTIVES + OPINIONS</Text>
-        <Image
-          source={{ uri: image }}
-          style={stylesPerspective.bannerFull}
-          contentFit="cover"
-        />
-        <View style={stylesPerspective.body}>
-          <Text style={stylesPerspective.h2}>PLASTIC FREE ADVOCACY</Text>
-          <Text style={stylesPerspective.paragraph}>
-            As the Field of Study Head for Professional Education, my advocacy
-            in life is all about the “ZERO WASTE PLASTIC MANAGEMENT” in general.
-            And as the former Pioneering Adviser of the Science Educators Guild
-            (SEG), under the Institute of Teacher Education, since then,
-            together with the student organization, we are dreaming and planning
-            to meet the zero-waste plastic management under the “PLASTIC FREE
-            ADVOCACY” to be specific in the College.
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => postSlug && router.push(`/post/${postSlug}`)}
-            // @ts-ignore hovered is web-only; pressed covers mobile
-            style={({ hovered, pressed }) => [
-              stylesPerspective.readMore,
-              (hovered || pressed) && stylesPerspective.readMoreActive,
-            ]}
-          >
-            {({ hovered, pressed }) => (
-              <>
-                <Text
-                  style={[
-                    stylesPerspective.readMoreText,
-                    (hovered || pressed) &&
-                      stylesPerspective.readMoreTextActive,
-                  ]}
-                >
-                  Read More
-                </Text>
-                <AnimatedIconShift
-                  active={hovered || pressed}
-                  style={stylesPerspective.readMoreIcon}
-                >
-                  <FontAwesome5
-                    name="arrow-right"
-                    size={14}
-                    color={
-                      hovered || pressed ? colors.textPrimary : colors.surface
-                    }
-                  />
-                </AnimatedIconShift>
-              </>
-            )}
-          </Pressable>
-        </View>
+        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+          <Text style={stylesPerspective.h1}>PERSPECTIVES + OPINIONS</Text>
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
+          <Image
+            source={{ uri: image }}
+            style={stylesPerspective.bannerFull}
+            contentFit="cover"
+          />
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 180} revealed={revealed}>
+          <View style={stylesPerspective.body}>
+            <Text style={stylesPerspective.h2}>PLASTIC FREE ADVOCACY</Text>
+            <Text style={stylesPerspective.paragraph}>
+              As the Field of Study Head for Professional Education, my advocacy
+              in life is all about the â€œZERO WASTE PLASTIC MANAGEMENTâ€ in
+              general. And as the former Pioneering Adviser of the Science
+              Educators Guild (SEG), under the Institute of Teacher Education,
+              since then, together with the student organization, we are
+              dreaming and planning to meet the zero-waste plastic management
+              under the â€œPLASTIC FREE ADVOCACYâ€ to be specific in the
+              College.
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => postSlug && router.push(`/post/${postSlug}`)}
+              // @ts-ignore hovered is web-only; pressed covers mobile
+              style={({ hovered, pressed }) => [
+                stylesPerspective.readMore,
+                (hovered || pressed) && stylesPerspective.readMoreActive,
+              ]}
+            >
+              {({ hovered, pressed }) => (
+                <>
+                  <Text
+                    style={[
+                      stylesPerspective.readMoreText,
+                      (hovered || pressed) &&
+                        stylesPerspective.readMoreTextActive,
+                    ]}
+                  >
+                    Read More
+                  </Text>
+                  <AnimatedIconShift
+                    active={hovered || pressed}
+                    style={stylesPerspective.readMoreIcon}
+                  >
+                    <FontAwesome5
+                      name="arrow-right"
+                      size={14}
+                      color={
+                        hovered || pressed ? colors.textPrimary : colors.surface
+                      }
+                    />
+                  </AnimatedIconShift>
+                </>
+              )}
+            </Pressable>
+          </View>
+        </FadeScroll>
       </View>
     );
   }
 
   if (isCareers) {
     const facultyPositions = [
-      { id: "Instructor I", count: 2, grade: "SG 12", salary: "₱ 29,165.00" },
-      { id: "Instructor II", count: 1, grade: "SG 13", salary: "₱ 31,320.00" },
-      { id: "Instructor III", count: 1, grade: "SG 14", salary: "₱ 33,843.00" },
+      { id: "Instructor I", count: 2, grade: "SG 12", salary: "â‚± 29,165.00" },
+      {
+        id: "Instructor II",
+        count: 1,
+        grade: "SG 13",
+        salary: "â‚± 31,320.00",
+      },
+      {
+        id: "Instructor III",
+        count: 1,
+        grade: "SG 14",
+        salary: "â‚± 33,843.00",
+      },
     ];
 
     return (
       <View style={[stylesSection.card, { backgroundColor }]}>
-        <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
-        <Text style={stylesCareers.h2}>
-          CURRENTLY NO VACANT POSITION AVAILABLE
-        </Text>
-        <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
-        <View style={stylesCareers.list}>
-          {facultyPositions.map(({ id, count, grade, salary }) => (
-            <View key={id} style={stylesCareers.card}>
-              <View style={stylesCareers.bar} />
-              <View style={stylesCareers.cardBody}>
-                <View style={stylesCareers.countBubble}>
-                  <Text style={stylesCareers.countText}>{count}</Text>
+        <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+          <Text style={stylesCareers.h1}>BE PART OF OUR TEAM</Text>
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 90} revealed={revealed}>
+          <Text style={stylesCareers.h2}>
+            CURRENTLY NO VACANT POSITION AVAILABLE
+          </Text>
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 160} revealed={revealed}>
+          <Text style={stylesCareers.h3}>Available Faculty Positions:</Text>
+        </FadeScroll>
+        <FadeScroll delay={FADE_SCROLL_DELAY + 230} revealed={revealed}>
+          <View style={stylesCareers.list}>
+            {facultyPositions.map(({ id, count, grade, salary }) => (
+              <View key={id} style={stylesCareers.card}>
+                <View style={stylesCareers.bar} />
+                <View style={stylesCareers.cardBody}>
+                  <View style={stylesCareers.countBubble}>
+                    <Text style={stylesCareers.countText}>{count}</Text>
+                  </View>
+                  <Text style={stylesCareers.title}>{id}</Text>
+                  <Text style={stylesCareers.meta}>
+                    {grade} â€“ {salary}
+                  </Text>
                 </View>
-                <Text style={stylesCareers.title}>{id}</Text>
-                <Text style={stylesCareers.meta}>
-                  {grade} – {salary}
-                </Text>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </FadeScroll>
       </View>
     );
   }
 
   return (
     <View style={[stylesSection.card, { backgroundColor }]}>
-      <Image
-        source={{ uri: image }}
-        style={stylesSection.banner}
-        contentFit="cover"
-      />
-      <View style={stylesSection.inner}>
-        <View style={stylesSection.badgeRow}>
-          <View
-            style={[
-              stylesSection.badge,
-              variant === "landing-red" && stylesSection.badgeRed,
-              variant === "landing-gray" && stylesSection.badgeGray,
-              variant === "landing-blue" && stylesSection.badgeBlue,
-            ]}
-          >
-            <Text
+      <FadeScroll delay={FADE_SCROLL_DELAY} revealed={revealed}>
+        <Image
+          source={{ uri: image }}
+          style={stylesSection.banner}
+          contentFit="cover"
+        />
+      </FadeScroll>
+      <FadeScroll delay={FADE_SCROLL_DELAY + 110} revealed={revealed}>
+        <View style={stylesSection.inner}>
+          <View style={stylesSection.badgeRow}>
+            <View
               style={[
-                stylesSection.badgeText,
-                variant === "landing-blue" && stylesSection.badgeTextBlue,
+                stylesSection.badge,
+                variant === "landing-red" && stylesSection.badgeRed,
+                variant === "landing-gray" && stylesSection.badgeGray,
+                variant === "landing-blue" && stylesSection.badgeBlue,
               ]}
             >
-              {variant}
-            </Text>
+              <Text
+                style={[
+                  stylesSection.badgeText,
+                  variant === "landing-blue" && stylesSection.badgeTextBlue,
+                ]}
+              >
+                {variant}
+              </Text>
+            </View>
           </View>
+          <Text style={[stylesSection.title, { color: textColor }]}>
+            {title}
+          </Text>
+          <Text style={[stylesSection.subtitle, { color: subtitleColor }]}>
+            {subtitle}
+          </Text>
         </View>
-        <Text style={[stylesSection.title, { color: textColor }]}>{title}</Text>
-        <Text style={[stylesSection.subtitle, { color: subtitleColor }]}>
-          {subtitle}
-        </Text>
-      </View>
+      </FadeScroll>
     </View>
   );
 }
@@ -595,7 +715,7 @@ const stylesFeature = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
     fontFamily: FontFamilies.accent,
-    color: "#9c4f00", // richer gold with stronger contrast
+    color: "#9c4f00",
     textAlign: "left",
   },
   storyTitleActive: {
