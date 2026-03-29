@@ -8,11 +8,11 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { MenuOverlay } from "@/components/menu-overlay";
 import { SearchOverlay } from "@/components/search-overlay";
-import { AnimatedIconShift } from "@/components/animated-icon-shift";
 import { landingSections, posts } from "@/constants/posts";
 import { AppTheme, FontFamilies } from "@/constants/theme";
 
@@ -70,7 +70,6 @@ export default function HomeScreen() {
             source={require("@/assets/images/cover-mobile.jpg")}
             style={styles.heroImage}
             contentFit="cover"
-            allowDownscaling
           />
           <View style={styles.heroOverlay} />
         </View>

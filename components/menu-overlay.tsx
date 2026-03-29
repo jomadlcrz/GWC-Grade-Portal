@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 
-import { AppTheme, FontFamilies } from "@/constants/theme";
 import { Collapsible } from "@/components/ui/collapsible";
+import { AppTheme, FontFamilies } from "@/constants/theme";
 import { OverlayHeader } from "./overlay-header";
 import { OverlayShell } from "./overlay-shell";
 
@@ -241,7 +241,7 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
       safeAreaStyle={styles.safeArea}
     >
       <OverlayHeader
-        logoSource={require("@/assets/images/gwc-logo-new-white-mobile.png")}
+        logoSource={require("@/assets/images/gwc-logo-white.png")}
         title="GWC"
         subtitle="Grade Portal"
         onHomePress={handleHome}
@@ -328,11 +328,18 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                             router.push(group.route);
                           }}
                           // @ts-ignore hovered is web-only; pressed covers mobile
-                          style={({ hovered, pressed }) => [styles.groupTrigger]}
+                          style={({ hovered, pressed }) => [
+                            styles.groupTrigger,
+                          ]}
                         >
                           {({ hovered, pressed }) => (
                             <>
-                              <Text style={[styles.groupTitle, styles.groupTitleActive]}>
+                              <Text
+                                style={[
+                                  styles.groupTitle,
+                                  styles.groupTitleActive,
+                                ]}
+                              >
                                 {group.label}
                               </Text>
                               <AnimatedUnderline active={hovered || pressed} />
@@ -408,7 +415,9 @@ export function MenuOverlay({ visible, onClose }: MenuOverlayProps) {
                                   >
                                     {entry.label}
                                   </Text>
-                                  <AnimatedUnderline active={hovered || pressed} />
+                                  <AnimatedUnderline
+                                    active={hovered || pressed}
+                                  />
                                 </>
                               )}
                             </Pressable>

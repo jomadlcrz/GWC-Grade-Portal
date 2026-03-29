@@ -36,7 +36,12 @@ function BulletItem({ label, onPress }: BulletItemProps) {
         }
       >
         {({ hovered, pressed }) => (
-          <Text style={[styles.bulletText, (hovered || pressed) && styles.hoverText]}>
+          <Text
+            style={[
+              styles.bulletText,
+              (hovered || pressed) && styles.hoverText,
+            ]}
+          >
             {label}
           </Text>
         )}
@@ -55,10 +60,9 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
       <View style={styles.content}>
         <View style={styles.logoWrapper}>
           <Image
-            source={require("@/assets/images/gwc-logo-new-white-mobile.png")}
+            source={require("@/assets/images/gwc-logo-white.png")}
             style={styles.logo}
             contentFit="contain"
-            allowDownscaling
           />
         </View>
 
@@ -75,14 +79,21 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
           <Text style={styles.sectionTitle}>Get in Touch</Text>
           <View style={styles.contactGroup}>
             <Pressable
-              onPress={() => openLink("mailto:goldenwest.colleges@yahoo.com.ph")}
+              onPress={() =>
+                openLink("mailto:goldenwest.colleges@yahoo.com.ph")
+              }
               // @ts-ignore hovered is web-only; pressed covers mobile
               style={({ hovered, pressed }) =>
                 (hovered || pressed) && styles.activeState
               }
             >
               {({ hovered, pressed }) => (
-                <Text style={[styles.linkText, (hovered || pressed) && styles.hoverText]}>
+                <Text
+                  style={[
+                    styles.linkText,
+                    (hovered || pressed) && styles.hoverText,
+                  ]}
+                >
                   goldenwest.colleges@yahoo.com.ph
                 </Text>
               )}
@@ -95,7 +106,12 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
               }
             >
               {({ hovered, pressed }) => (
-                <Text style={[styles.linkText, (hovered || pressed) && styles.hoverText]}>
+                <Text
+                  style={[
+                    styles.linkText,
+                    (hovered || pressed) && styles.hoverText,
+                  ]}
+                >
                   0916 596 9881
                 </Text>
               )}
@@ -117,7 +133,9 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
                 <FontAwesome5
                   name="facebook-f"
                   size={18}
-                  color={hovered || pressed ? colors.hoverGold : colors.textOnPrimary}
+                  color={
+                    hovered || pressed ? colors.hoverGold : colors.textOnPrimary
+                  }
                 />
               )}
             </Pressable>
@@ -146,7 +164,12 @@ export function Footer({ bottomInset = 0 }: FooterProps) {
                 }
               >
                 {({ hovered, pressed }) => (
-                  <Text style={[styles.addressText, (hovered || pressed) && styles.hoverText]}>
+                  <Text
+                    style={[
+                      styles.addressText,
+                      (hovered || pressed) && styles.hoverText,
+                    ]}
+                  >
                     San Jose Drive, Alaminos, Philippines, 2404
                   </Text>
                 )}

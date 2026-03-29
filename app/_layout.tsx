@@ -15,17 +15,10 @@ import {
   OpenSans_800ExtraBold,
   useFonts as useOpenSans,
 } from "@expo-google-fonts/open-sans";
-import { Image as ExpoImage } from "expo-image";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
-// Apply once so every Expo Image uses memory+disk caching by default
-(ExpoImage as any).defaultProps = {
-  ...(ExpoImage as any).defaultProps,
-  cachePolicy: "memory-disk",
-};
 
 export default function RootLayout() {
   const [openSansLoaded] = useOpenSans({

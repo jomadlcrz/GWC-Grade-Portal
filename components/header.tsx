@@ -76,10 +76,9 @@ export function Header({
       >
         <View style={styles.logoWrapper}>
           <Image
-            source={require("@/assets/images/gwc-logo-new-mobile.png")}
+            source={require("@/assets/images/gwc-logo.png")}
             style={styles.logo}
             contentFit="contain"
-            allowDownscaling
           />
         </View>
 
