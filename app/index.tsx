@@ -428,18 +428,18 @@ function SectionCard({
 
   if (isCareers) {
     const facultyPositions = [
-      { id: "Instructor I", count: 2, grade: "SG 12", salary: "â‚± 29,165.00" },
+      { id: "Instructor I", count: 2, grade: "SG 12", salary: "\u20B1 29,165.00" },
       {
         id: "Instructor II",
         count: 1,
         grade: "SG 13",
-        salary: "â‚± 31,320.00",
+        salary: "\u20B1 31,320.00",
       },
       {
         id: "Instructor III",
         count: 1,
         grade: "SG 14",
-        salary: "â‚± 33,843.00",
+        salary: "\u20B1 33,843.00",
       },
     ];
 
@@ -462,7 +462,7 @@ function SectionCard({
                 </View>
                 <Text style={stylesCareers.title}>{id}</Text>
                 <Text style={stylesCareers.meta}>
-                  {grade} â€“ {salary}
+                  {grade} - {salary}
                 </Text>
               </View>
             </View>
@@ -879,3 +879,4 @@ const stylesPerspective = StyleSheet.create({
     alignItems: "center",
   },
 });
+
