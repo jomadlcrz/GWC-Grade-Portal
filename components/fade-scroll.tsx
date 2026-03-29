@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef } from "react";
-import { Animated } from "react-native";
+import { AccessibilityInfo, Animated } from "react-native";
 
 type FadeScrollDirection = "up" | "down" | "left" | "right";
 
@@ -49,6 +49,7 @@ export function FadeScroll({
   ).current;
   const hasAnimatedRef = useRef(revealed);
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+  const reduceMotionRef = useRef(false);
 
   useEffect(() => {
     if (hasAnimatedRef.current) {
@@ -61,11 +62,56 @@ export function FadeScroll({
   }, [direction, distance, translateX, translateY]);
 
   useEffect(() => {
-    if (!revealed || hasAnimatedRef.current) {
+    let isMounted = true;
+
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((enabled) => {
+        if (!isMounted) {
+          return;
+        }
+
+        reduceMotionRef.current = enabled;
+      })
+      .catch(() => {
+        reduceMotionRef.current = false;
+      });
+
+    const subscription = AccessibilityInfo.addEventListener(
+      "reduceMotionChanged",
+      (enabled) => {
+        reduceMotionRef.current = enabled;
+      },
+    );
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!revealed) {
+      hasAnimatedRef.current = false;
+
+      const nextTransform = getInitialTransform(direction, distance);
+      opacity.setValue(0);
+      translateX.setValue(nextTransform.translateX ?? 0);
+      translateY.setValue(nextTransform.translateY ?? 0);
+      return;
+    }
+
+    if (hasAnimatedRef.current) {
       return;
     }
 
     hasAnimatedRef.current = true;
+
+    if (reduceMotionRef.current) {
+      opacity.setValue(1);
+      translateX.setValue(0);
+      translateY.setValue(0);
+      return;
+    }
 
     animationRef.current?.stop();
     animationRef.current = Animated.parallel([
@@ -104,6 +150,8 @@ export function FadeScroll({
     };
   }, [
     delay,
+    direction,
+    distance,
     duration,
     fadeDuration,
     opacity,

@@ -3,11 +3,9 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   type LayoutChangeEvent,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -62,27 +60,27 @@ export default function HomeScreen() {
   const [revealedSections, setRevealedSections] = useState<Record<string, boolean>>(
     {},
   );
-  const [sectionOffsets, setSectionOffsets] = useState<Record<string, number>>({});
   const contentRef = useRef<View | null>(null);
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const isScrolledRef = useRef(false);
+  const lastScrollOffsetRef = useRef(0);
+  const sectionOffsetsRef = useRef<Record<string, number>>({});
+  const scrollFrameRef = useRef<number | null>(null);
 
   const updateRevealOffset = (key: string, nextY: number) => {
-    setSectionOffsets((current) => {
-      const next =
-        current[key] === nextY ? current : { ...current, [key]: nextY };
+    if (sectionOffsetsRef.current[key] === nextY) {
+      return;
+    }
 
-      const revealLine = viewportHeight - 140;
+    sectionOffsetsRef.current[key] = nextY;
 
-      if (nextY <= revealLine) {
-        setRevealedSections((revealedCurrent) =>
-          revealedCurrent[key]
-            ? revealedCurrent
-            : { ...revealedCurrent, [key]: true },
-        );
-      }
+    const revealLine = lastScrollOffsetRef.current + viewportHeight - 140;
+    if (nextY > revealLine) {
+      return;
+    }
 
-      return next;
-    });
+    setRevealedSections((current) =>
+      current[key] ? current : { ...current, [key]: true },
+    );
   };
 
   const handleRevealLayout = (key: string, event: LayoutChangeEvent) => {
@@ -110,7 +108,10 @@ export default function HomeScreen() {
       offsetY >= heroHeight - HEADER_HEIGHT - insets.top;
     const revealLine = offsetY + viewportHeight - 140;
 
-    if (shouldUseStickyStyle !== isScrolled) {
+    lastScrollOffsetRef.current = offsetY;
+
+    if (shouldUseStickyStyle !== isScrolledRef.current) {
+      isScrolledRef.current = shouldUseStickyStyle;
       setIsScrolled(shouldUseStickyStyle);
     }
 
@@ -118,8 +119,7 @@ export default function HomeScreen() {
       let changed = false;
       const next = { ...current };
 
-      for (const [key, top] of Object.entries(sectionOffsets)) {
-
+      for (const [key, top] of Object.entries(sectionOffsetsRef.current)) {
         if (top !== undefined && top <= revealLine && !next[key]) {
           next[key] = true;
           changed = true;
@@ -130,26 +130,35 @@ export default function HomeScreen() {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      if (scrollFrameRef.current !== null) {
+        cancelAnimationFrame(scrollFrameRef.current);
+      }
+    };
+  }, []);
+
   return (
     <SafeAreaView
       edges={["top", "bottom", "left", "right"]}
       style={styles.container}
     >
-      <Animated.ScrollView
+      <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: 0 }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          {
-            useNativeDriver: true,
-            listener: (event) => {
-              const scrollEvent =
-                event as NativeSyntheticEvent<NativeScrollEvent>;
-              handleScroll(scrollEvent.nativeEvent.contentOffset.y);
-            },
-          },
-        )}
+        onScroll={(event) => {
+          const offsetY = event.nativeEvent.contentOffset.y;
+
+          if (scrollFrameRef.current !== null) {
+            cancelAnimationFrame(scrollFrameRef.current);
+          }
+
+          scrollFrameRef.current = requestAnimationFrame(() => {
+            scrollFrameRef.current = null;
+            handleScroll(offsetY);
+          });
+        }}
       >
         <View style={[styles.heroSection, { height: heroHeight }]}>
           <Image
@@ -180,7 +189,7 @@ export default function HomeScreen() {
           ))}
         </View>
         <Footer bottomInset={insets.bottom} />
-      </Animated.ScrollView>
+      </ScrollView>
 
       <View style={[styles.fixedHeader, { paddingTop: insets.top }]}>
         <Header
